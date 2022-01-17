@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Api.Service;
 using Core.Entity;
+using Core.Entity.Auth;
 using Core.Interfaces.Common;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
@@ -26,6 +27,7 @@ namespace Api.Extensions
             #region Services
 
             services.AddScoped(typeof(IBaseService<,>),typeof(BaseService<,>));
+            services.AddScoped<IUserService, UserService>();
 
             #endregion
 

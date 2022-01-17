@@ -2,6 +2,7 @@
 using Core.Dto.Auth.Request;
 using Core.Dto.Auth.Response;
 using Core.Entity;
+using Core.Entity.Auth;
 using Core.Interfaces.Common;
 using Core.Response;
 using Microsoft.AspNetCore.Authorization;
