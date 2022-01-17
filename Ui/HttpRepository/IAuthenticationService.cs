@@ -8,6 +8,7 @@ namespace Ui.HttpRepository
     {
         Task<ApiResponse<string>> RegisterUser(SignUpRequest request);
         Task<ApiResponse<AuthResponse>> Login(LoginRequest request);
+        Task<string> GetAccessToken();
         Task Logout();
     }
 }

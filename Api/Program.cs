@@ -1,14 +1,16 @@
 using Api.Extensions;
 using Core.Helpers;
 using Core.Middleware;
+using Microsoft.AspNetCore.ResponseCompression;
 using Serilog;
 using Serilog.Events;
+using Service.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var pathBuilt = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\Logs");
-
+builder.Services.AddSignalR();
 if (!Directory.Exists(pathBuilt))
 {
     Directory.CreateDirectory(pathBuilt);
@@ -27,8 +29,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.RegisterDependency(builder.Configuration);
 
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/octet-stream" });
+});
+
 
 var app = builder.Build();
+app.UseResponseCompression();
 app.UseSerilogRequestLogging();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -44,7 +53,10 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapHub<ChatHub>("/chathub");
+});
 
 app.Run();

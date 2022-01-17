@@ -53,6 +53,11 @@ namespace Ui.HttpRepository
             return result;
         }
 
+        public async Task<string> GetAccessToken()
+        {
+            return await _localStorage.GetItemAsync<string>("authToken");
+        }
+
         public async Task Logout()
         {
             await _localStorage.RemoveItemAsync("authToken");
