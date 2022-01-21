@@ -1,5 +1,4 @@
 ﻿@using Microsoft.AspNetCore.SignalR.Client
-@using System.Security.Claims
 @inherits LayoutComponentBase
 
 <div class="page">
@@ -14,17 +13,6 @@
         <CascadingValue Value="_hubConnection">
                     @Body
         </CascadingValue>
-        @*<AuthorizeView>
-            <Authorized>
-                
-            </Authorized>
-            <Authorizing>
-                <p>Authorizing please wait</p>
-            </Authorizing>
-            <NotAuthorized>
-                <h2>You are not authorize to access this resource. Please login</h2>
-            </NotAuthorized>
-        </AuthorizeView>*@
     </main>
 </div>
 
@@ -37,14 +25,12 @@
         var state = await _authStateProvider.GetAuthenticationStateAsync();
         var user = state.User;
 
-        if (!user.Identity.IsAuthenticated)
+        if (user.Identity is {IsAuthenticated: false })
         {
             _navigationManager.NavigateTo("/login");
         }
         else
         {
-            var currentUserId = user.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).Select(a => a.Value).FirstOrDefault();
-
             _hubConnection = new HubConnectionBuilder()
                 .WithUrl("https://localhost:7280/chathub", options =>
                 {
