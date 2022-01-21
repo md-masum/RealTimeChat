@@ -1,5 +1,6 @@
 ﻿@page "/message"
 @inject NavigationManager NavigationManager
+@using Ui.Models
 @implements IAsyncDisposable
 
 <PageTitle>Index</PageTitle>
@@ -30,10 +31,16 @@
     </div>
     <div class="col-6">
         <ul id="messagesList">
-            @foreach (var user in userList)
-            {
-                <li>@user.Id + " " + @user.UserName</li>
-            }
+            <SfGrid DataSource="userList">
+                <GridColumns>
+                    <GridColumn Field="@nameof(UserDto.Id)" HeaderText="Id"></GridColumn>
+                    <GridColumn Field="@nameof(UserDto.UserName)" HeaderText="User Name"></GridColumn>
+                </GridColumns>
+            </SfGrid>
+            @* @foreach (var user in userList) *@
+            @* { *@
+            @*     <li>@user.Id + " " + @user.UserName</li> *@
+            @* } *@
         </ul>
     </div>
 </div>
