@@ -9,3 +9,13 @@
 @using Ui
 @using Ui.Shared
 @using Microsoft.AspNetCore.Components.Authorization
+@using Ui.AuthProviders
+@using Ui.HttpRepository
+@using Ui.Component
+
+@inject IChatService _chatManager
+@inject IUserService _userService
+@inject NavigationManager _navigationManager
+@inject IJSRuntime _jsRuntime
+@inject AuthenticationStateProvider _authStateProvider
+@inject IAuthenticationService _authenticationService

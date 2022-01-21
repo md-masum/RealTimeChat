@@ -1,4 +1,5 @@
-﻿@using Ui.Component
+﻿@using Microsoft.AspNetCore.SignalR.Client
+@using System.Security.Claims
 @inherits LayoutComponentBase
 
 <div class="page">
@@ -10,9 +11,59 @@
         <div class="top-row px-4">
             <AuthLinks />
         </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
+        <CascadingValue Value="_hubConnection">
+                    @Body
+        </CascadingValue>
+        @*<AuthorizeView>
+            <Authorized>
+                
+            </Authorized>
+            <Authorizing>
+                <p>Authorizing please wait</p>
+            </Authorizing>
+            <NotAuthorized>
+                <h2>You are not authorize to access this resource. Please login</h2>
+            </NotAuthorized>
+        </AuthorizeView>*@
     </main>
 </div>
+
+@code
+{
+    private HubConnection? _hubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await _authStateProvider.GetAuthenticationStateAsync();
+        var user = state.User;
+
+        if (!user.Identity.IsAuthenticated)
+        {
+            _navigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            var currentUserId = user.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).Select(a => a.Value).FirstOrDefault();
+
+            _hubConnection = new HubConnectionBuilder()
+                .WithUrl("https://localhost:7280/chathub", options =>
+                {
+                    options.AccessTokenProvider = async () => await _authenticationService.GetAccessToken();
+                })
+                .Build();
+
+            await _hubConnection.StartAsync();
+        }
+    }
+
+        public bool IsConnected =>
+            _hubConnection is {State: HubConnectionState.Connected};
+
+        public async ValueTask DisposeAsync()
+        {
+            if (_hubConnection is not null)
+            {
+                await _hubConnection.DisposeAsync();
+            }
+        }
+}

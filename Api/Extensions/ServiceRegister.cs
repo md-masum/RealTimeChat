@@ -28,6 +28,7 @@ namespace Api.Extensions
 
             services.AddScoped(typeof(IBaseService<,>),typeof(BaseService<,>));
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IChatService, ChatService>();
 
             #endregion
 
@@ -60,7 +61,7 @@ namespace Api.Extensions
         private static void AddDatabase(IServiceCollection services, ConfigurationManager configuration)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseLazyLoadingProxies().UseSqlite(
+                options.UseSqlite(
                     configuration.GetConnectionString("DefaultConnection"),
                     b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
