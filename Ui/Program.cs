@@ -23,6 +23,6 @@ builder.Services.AddScoped<HttpInterceptorService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddTransient<IChatService, ChatService>();
-builder.Services.AddSyncfusionBlazor();
+builder.Services.AddSyncfusionBlazor(options => { options.IgnoreScriptIsolation = true; });
 
 await builder.Build().RunAsync();

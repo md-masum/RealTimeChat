@@ -11,8 +11,8 @@ namespace Ui.Pages
         [CascadingParameter] public HubConnection? HubConnection { get; set; }
         private string? receverId;
         private string? messageInput;
-        private List<string> messages = new List<string>();
-        private List<UserDto> userList = new List<UserDto>();
+        private List<string> Messages = new List<string>();
+        public List<UserDto> userList { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -29,7 +29,7 @@ namespace Ui.Pages
 
             // await hubConnection.StartAsync();
             var users = await _chatManager.GetUsersAsync();
-            userList.AddRange(users.Data);
+            userList = users.Data;
 
             HubConnection ??= new HubConnectionBuilder()
                 .WithUrl("https://localhost:7280/chathub",
@@ -43,7 +43,7 @@ namespace Ui.Pages
             HubConnection.On<string, string, string>("ReceiveMessage", (sender, recever, message) =>
             {
                 var encodedMsg = $"{sender} - {recever}: {message}";
-                messages.Add(encodedMsg);
+                Messages.Add(encodedMsg);
                 StateHasChanged();
             });
         }
@@ -62,10 +62,7 @@ namespace Ui.Pages
 
         public async ValueTask DisposeAsync()
         {
-            if (HubConnection is not null)
-            {
-                await HubConnection.DisposeAsync();
-            }
+            
         }
     }
 }
