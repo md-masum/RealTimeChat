@@ -11,6 +11,9 @@ namespace Ui.Pages
         [Inject]
         public IUserService? UserService { get; set; }
 
+        [Inject]
+        public HttpInterceptorService Interceptor { get; set; }
+
         public UserDto UserData { get; set; } = new();
 
         public bool ShowErrorMessage { get; set; }
@@ -20,6 +23,8 @@ namespace Ui.Pages
 
         protected override async Task OnInitializedAsync()
         {
+            Interceptor.RegisterEvent();
+
             var data = await UserService!.GetCurrentUser();
             if (data.IsSuccess)
             {
@@ -64,5 +69,7 @@ namespace Ui.Pages
             _userUpdate = new UserUpdateDto();
             IsInEditState = false;
         }
+
+        public void Dispose() => Interceptor.DisposeEvent();
     }
 }

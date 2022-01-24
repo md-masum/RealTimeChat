@@ -58,6 +58,26 @@ namespace Ui.HttpRepository
             return await _localStorage.GetItemAsync<string>("authToken");
         }
 
+        public async Task<bool> IsUserAuthenticated()
+        {
+            var state = await _authStateProvider.GetAuthenticationStateAsync();
+            var user = state.User;
+            if (user.Identity is { IsAuthenticated: true })
+            {
+                var token = await _localStorage.GetItemAsync<string>("authToken");
+                var exp = user.FindFirst(c => c.Type.Equals("exp"))?.Value;
+                var expTime = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(exp));
+                var timeUtc = DateTime.UtcNow;
+                var diff = expTime - timeUtc;
+                if (diff.TotalMinutes > 0)
+                {
+                    return true;
+                }
+            }
+            await Logout();
+            return false;
+        }
+
         public async Task Logout()
         {
             await _localStorage.RemoveItemAsync("authToken");

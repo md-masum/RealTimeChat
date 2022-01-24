@@ -9,6 +9,7 @@ namespace Ui.HttpRepository
     {
         private readonly HttpClient _client;
         private readonly JsonSerializerOptions _options;
+
         public UserService(HttpClient client)
         {
             _client = client;

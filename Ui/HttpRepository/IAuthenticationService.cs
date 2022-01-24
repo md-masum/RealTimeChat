@@ -10,5 +10,6 @@ namespace Ui.HttpRepository
         Task<ApiResponse<AuthResponse>> Login(LoginRequest request);
         Task<string> GetAccessToken();
         Task Logout();
+        Task<bool> IsUserAuthenticated();
     }
 }

@@ -25,11 +25,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var state = await _authStateProvider.GetAuthenticationStateAsync();
-        var user = state.User;
-
-        if (user.Identity is {IsAuthenticated: false })
+        if (!await _authenticationService.IsUserAuthenticated())
         {
+            StateHasChanged();
             _navigationManager.NavigateTo("/login");
         }
         else
