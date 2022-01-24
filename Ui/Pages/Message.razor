@@ -1,40 +1,60 @@
 ﻿@page "/message"
-@inject NavigationManager NavigationManager
 @using Ui.Models
-@implements IAsyncDisposable
 
 <PageTitle>Index</PageTitle>
 
-<div class="form-group">
-    <label>
-        User:
-        <input @bind="receverId" />
-    </label>
-</div>
-<div class="form-group">
-    <label>
-        Message:
-        <input @bind="messageInput" size="50" />
-    </label>
-</div>
-<button class="btn btn-info" @onclick="Send" disabled="@(!IsConnected)">Send</button>
+@if (UserList != null && UserList.Any())
+{
+    <div class="form-group">
+        <label>
+            User:
+            <input @bind="receverId" />
+        </label>
+    </div>
+    <div class="form-group">
+        <label>
+            Message:
+            <input @bind="messageInput" size="50" />
+        </label>
+    </div>
+    <button class="btn btn-info" @onclick="Send" disabled="@(!IsConnected)">Send</button>
 
-<hr>
-<div class="row">
-    <div class="col-6">
-        <ul id="messagesList">
-            @foreach (var message in Messages)
-            {
-                <li>@message</li>
-            }
-        </ul>
+    <hr>
+    <div class="row">
+        <div class="col-6">
+            <div>
+                <button class="e-btn e-control e-info" id="info_Toast" @onclick="@InfoBtnOnClick"> Info Message </button>
+                <button class="e-btn e-control e-success" id="success_Toast" @onclick="@SuccessBtnOnClick"> Success Message </button>
+                <button class="e-btn e-control e-warning" id="warning_Toast" @onclick="@WarnBtnOnClick"> Warning Message </button>
+                <button class="e-btn e-control e-danger" id="error_Toast" @onclick="@ErrorBtnOnClick"> Error Message </button>
+            </div>
+            <ul id="messagesList">
+                @foreach (var message in Messages)
+                {
+                    <li>@message</li>
+                }
+            </ul>
+        </div>
+        <div class="col-6">
+            <SfListView ID="list" DataSource="@UserList" EnableVirtualization="true"  CssClass="e-list-template ui-list" HeaderTitle="Contacts" Height="500px" ShowHeader="true">
+                <ListViewFieldSettings Id="Id" Text="Name" TValue="UserDto"></ListViewFieldSettings>
+                <ListViewTemplates TValue="UserDto">
+                    <Template>
+                        <div class="e-list-wrapper e-list-multi-line e-list-avatar">
+                            <span id="showUI" class='e-avatar e-avatar-circle' icon=@context.UserName.Substring(0, 1).ToUpper()> @context.UserName.Substring(0, 1).ToUpper()</span>
+                            <span class="e-list-item-header">@context.UserName</span>
+                            <span class="e-list-content">@context.Email</span>
+                        </div>
+                    </Template>
+                </ListViewTemplates>
+            </SfListView>
+           
+        </div>
     </div>
-    <div class="col-6">
-            <SfGrid DataSource="userList">
-                <GridColumns>
-                    <GridColumn Field="@nameof(UserDto.Id)" HeaderText="Id"></GridColumn>
-                    <GridColumn Field="@nameof(UserDto.UserName)" HeaderText="User Name"></GridColumn>
-                </GridColumns>
-            </SfGrid>
-    </div>
-</div>
+}
+else
+{
+    <SfSpinner Visible="true"></SfSpinner>
+}
+
+

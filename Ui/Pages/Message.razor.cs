@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Security.Claims;
-using Ui.HttpRepository;
 using Ui.Models;
 
 namespace Ui.Pages
@@ -12,7 +11,7 @@ namespace Ui.Pages
         private string? receverId;
         private string? messageInput;
         private List<string> Messages = new List<string>();
-        public List<UserDto> userList { get; set; }
+        public List<UserDto>? UserList { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -29,7 +28,7 @@ namespace Ui.Pages
 
             // await hubConnection.StartAsync();
             var users = await _chatManager.GetUsersAsync();
-            userList = users.Data;
+            if (users.Data != null) UserList = users.Data;
 
             HubConnection ??= new HubConnectionBuilder()
                 .WithUrl("https://localhost:7280/chathub",
@@ -47,6 +46,24 @@ namespace Ui.Pages
                 StateHasChanged();
             });
         }
+
+        private async Task InfoBtnOnClick()
+        {
+            await _toastService.ShowInfo("There was a problem with your network connection.", 50000);
+        }
+        private async Task WarnBtnOnClick()
+        {
+            await _toastService.ShowWarn("There was a problem with your network connection.", 50000);
+        }
+        private async Task SuccessBtnOnClick()
+        {
+            await _toastService.ShowSuccess("There was a problem with your network connection.", 50000);
+        }
+        private async Task ErrorBtnOnClick()
+        {
+            await _toastService.ShowError("There was a problem with your network connection.", 50000);
+        }
+
         private async Task Send()
         {
             var state = await _authStateProvider.GetAuthenticationStateAsync();
@@ -59,10 +76,5 @@ namespace Ui.Pages
 
         public bool IsConnected =>
             HubConnection?.State == HubConnectionState.Connected;
-
-        public async ValueTask DisposeAsync()
-        {
-            
-        }
     }
 }

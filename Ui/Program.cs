@@ -7,11 +7,11 @@ using Toolbelt.Blazor.Extensions.DependencyInjection;
 using Ui;
 using Ui.AuthProviders;
 using Ui.HttpRepository;
+using Ui.Service;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
-var value = builder.Configuration.GetSection("Syncfusion").Value;
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(builder.Configuration.GetSection("Syncfusion").Value);
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddAuthorizationCore();
@@ -24,5 +24,6 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddTransient<IChatService, ChatService>();
 builder.Services.AddSyncfusionBlazor(options => { options.IgnoreScriptIsolation = true; });
+builder.Services.AddSingleton<ToastService>();
 
 await builder.Build().RunAsync();

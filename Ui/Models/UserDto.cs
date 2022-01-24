@@ -14,5 +14,6 @@
         public string? DateOfBirth { get; set; }
         public string? ProfilePicture { get; set; }
         public bool IsActive { get; set; }
+        public bool IsOnline { get; set; }
     }
 }
