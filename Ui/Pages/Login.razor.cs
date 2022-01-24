@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.SignalR.Client;
 using Ui.HttpRepository;
 using Ui.Models.Auth.Request;
 

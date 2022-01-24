@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
 
 <PageTitle>Index</PageTitle>
 
@@ -7,3 +8,34 @@
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
+
+@code
+{
+    [CascadingParameter] public HubConnection? HubConnection { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!await _authenticationService.IsUserAuthenticated())
+        {
+            StateHasChanged();
+            _navigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            HubConnection ??= new HubConnectionBuilder()
+                .WithUrl("https://localhost:7280/chathub",
+                    options => { options.AccessTokenProvider = async () => await _authenticationService.GetAccessToken(); })
+                .Build();
+            if (HubConnection.State == HubConnectionState.Disconnected)
+            {
+                await HubConnection.StartAsync();
+            }
+
+            HubConnection.On<string, string, string>("ReceiveChatNotification", async (senderName, receiver, sender) =>
+            {
+                var encodedMsg = $"You got new message from {senderName}";
+                await _toastService.ShowInfo(encodedMsg, 5000);
+            });
+        }
+    }
+}

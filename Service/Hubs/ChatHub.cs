@@ -1,5 +1,4 @@
-﻿using Core.Entity;
-using Core.Interfaces.Common;
+﻿using Core.Interfaces.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -14,17 +13,17 @@ namespace Service.Hubs
         {
             _cureUserService = cureUserService;
         }
-        public async Task SendMessage(string sender, string recever, string message)
+        public async Task SendMessage(string sender, string receiver, string message)
         {
-            await Clients.User(recever).SendAsync("ReceiveMessage", sender, recever, message);
+            await Clients.User(receiver).SendAsync("ReceiveMessage", sender, receiver, message);
         }
         // public async Task SendMessageAsync(ChatMessage message, string userName)
         // {
         //     await Clients.All.SendAsync("ReceiveMessage", message, userName);
         // }
-        public async Task ChatNotificationAsync(string message, string receiverUserId, string senderUserId)
+        public async Task ChatNotificationAsync(string senderName, string receiverUserId, string senderUserId)
         {
-            await Clients.All.SendAsync("ReceiveChatNotification", message, receiverUserId, senderUserId);
+            await Clients.User(receiverUserId).SendAsync("ReceiveChatNotification", senderName, receiverUserId, senderUserId);
         }
     }
 }

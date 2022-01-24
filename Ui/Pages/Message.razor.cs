@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Security.Claims;
+using Syncfusion.Blazor.Inputs;
 using Ui.Models;
 
 namespace Ui.Pages
@@ -8,25 +9,15 @@ namespace Ui.Pages
     public partial class Message
     {
         [CascadingParameter] public HubConnection? HubConnection { get; set; }
-        private string? receverId;
-        private string? messageInput;
-        private List<string> Messages = new List<string>();
         public List<UserDto>? UserList { get; set; }
+        public List<ChatMessage>? ChatMessage { get; set; }
+        public UserDto? Receiver { get; set; }
+
+        private string? _messageInput;
+        private SfTextBox? _sfTextBox;
 
         protected override async Task OnInitializedAsync()
         {
-            // hubConnection = new HubConnectionBuilder()
-            //     .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
-            //     .Build();
-
-            // hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
-            // {
-            //     var encodedMsg = $"{user}: {message}";
-            //     messages.Add(encodedMsg);
-            //     StateHasChanged();
-            // });
-
-            // await hubConnection.StartAsync();
             var users = await _chatManager.GetUsersAsync();
             if (users.Data != null) UserList = users.Data;
 
@@ -39,38 +30,50 @@ namespace Ui.Pages
                 await HubConnection.StartAsync();
             }
 
-            HubConnection.On<string, string, string>("ReceiveMessage", (sender, recever, message) =>
+            HubConnection.On<string, string, string>("ReceiveMessage", (sender, receiver, message) =>
             {
-                var encodedMsg = $"{sender} - {recever}: {message}";
-                Messages.Add(encodedMsg);
-                StateHasChanged();
+                var chatMessage = new ChatMessage
+                {
+                    Message = message,
+                    FromUserName = (UserList?.FirstOrDefault(c => c.Id == sender))?.UserName,
+                    FromUserEmail = (UserList?.FirstOrDefault(c => c.Id == sender))?.Email,
+                    FromUserId = (UserList?.FirstOrDefault(c => c.Id == sender))?.Id,
+                    ToUserName = (UserList?.FirstOrDefault(c => c.Id == receiver))?.UserName,
+                    ToUserEmail = (UserList?.FirstOrDefault(c => c.Id == receiver))?.Email,
+                    ToUserId = (UserList?.FirstOrDefault(c => c.Id == receiver))?.Id,
+                };
+                ChatMessage?.Add(chatMessage);
             });
         }
 
-        private async Task InfoBtnOnClick()
+        private async Task OnSelect(UserDto? selectedUser)
         {
-            await _toastService.ShowInfo("There was a problem with your network connection.", 50000);
-        }
-        private async Task WarnBtnOnClick()
-        {
-            await _toastService.ShowWarn("There was a problem with your network connection.", 50000);
-        }
-        private async Task SuccessBtnOnClick()
-        {
-            await _toastService.ShowSuccess("There was a problem with your network connection.", 50000);
-        }
-        private async Task ErrorBtnOnClick()
-        {
-            await _toastService.ShowError("There was a problem with your network connection.", 50000);
+            Receiver = selectedUser;
+            if (Receiver is null) return;
+            var messages = await _chatManager.GetConversationAsync(Receiver.Id);
+            if (messages.Data != null) ChatMessage = messages.Data;
         }
 
-        private async Task Send()
+        private async Task OnMessageSelect(ChatMessage chatMessage)
+        {
+
+        }
+
+        private async Task OnSend()
         {
             var state = await _authStateProvider.GetAuthenticationStateAsync();
             var user = state.User;
             if (HubConnection is not null)
             {
-                await HubConnection.SendAsync("SendMessage", user.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).Select(a => a.Value).FirstOrDefault(), receverId, messageInput);
+                var saveMessage = new SaveOrUpdateMessage
+                {
+                    Message = _sfTextBox?.Value,
+                    ToUserId = Receiver?.Id
+                };
+                await _chatManager.SaveMessageAsync(saveMessage);
+                await HubConnection.SendAsync("SendMessage", user.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).Select(a => a.Value).FirstOrDefault(), Receiver?.Id, _sfTextBox?.Value);
+                await HubConnection.SendAsync("ChatNotificationAsync", Receiver?.UserName, Receiver?.Id, "");
+                StateHasChanged();
             }
         }
 

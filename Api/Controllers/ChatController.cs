@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using Core.Dto;
-using Core.Entity;
+﻿using Core.Dto;
 using Core.Interfaces.Services;
 using Core.Response;
 using Microsoft.AspNetCore.Authorization;
@@ -28,17 +26,31 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<bool>>> SaveMessageAsync(ChatMessageRequestDto message)
+        public async Task<ActionResult<ApiResponse<List<ConversationToReturnDto>>>> SaveMessageAsync(ChatMessageRequestDto message)
         {
             var response = await _chatService.SaveMessage(message);
-            return Ok(new ApiResponse<bool>(response));
+            return Ok(new ApiResponse<List<ConversationToReturnDto>>(response));
         }
 
         [HttpGet("{contactId}")]
-        public async Task<ActionResult<ApiResponse<List<ChatMessage>>>> GetConversationAsync(string contactId)
+        public async Task<ActionResult<ApiResponse<List<ConversationToReturnDto>>>> GetConversationAsync(string contactId)
         {
             var response = await _chatService.GetConversation(contactId);
-            return Ok(new ApiResponse<List<ChatMessage>>(response));
+            return Ok(new ApiResponse<List<ConversationToReturnDto>>(response));
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<ApiResponse<List<ConversationToReturnDto>>>> UpdateMessageAsync(ChatMessageRequestDto message)
+        {
+            var response = await _chatService.UpdateMessage(message);
+            return Ok(new ApiResponse<List<ConversationToReturnDto>>(response));
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ApiResponse<List<ConversationToReturnDto>>>> DeleteMessageAsync(string id)
+        {
+            var response = await _chatService.DeleteMessage(id);
+            return Ok(new ApiResponse<List<ConversationToReturnDto>>(response));
         }
     }
 }

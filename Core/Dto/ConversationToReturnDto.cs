@@ -1,6 +1,9 @@
-﻿namespace Ui.Models
+﻿using Core.Entity;
+using Core.Interfaces.Common;
+
+namespace Core.Dto
 {
-    public class ChatMessage
+    public class ConversationToReturnDto : IMapFrom<ChatMessage>
     {
         public Guid Id { get; set; }
         public string? FromUserId { get; set; }
@@ -15,7 +18,7 @@
         public bool IsDeleteFromUser { get; set; }
         public bool IsDeleteToUserUser { get; set; }
 
-
+        
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
     }
