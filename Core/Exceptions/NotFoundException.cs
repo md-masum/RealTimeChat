@@ -3,7 +3,7 @@
     public class NotFoundException : Exception
     {
         private const string DefaultMessage = "Requested data not found.";
-        public List<string>? Errors { get; }
+        public List<string> Errors { get; }
 
 
         public NotFoundException() : base(DefaultMessage)

@@ -5,7 +5,7 @@ namespace Core.Dto
 {
     public class TestDto : BaseDto, IMapFrom<Test>
     {
-        public string? Name { get; set; }
-        public string? Email { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
     }
 }

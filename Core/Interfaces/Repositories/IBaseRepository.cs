@@ -6,13 +6,13 @@ namespace Core.Interfaces.Repositories
     public interface IBaseRepository<TEntity> where TEntity : BaseEntity
     {
         //HTTP GET
-        Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> predicate);
-        Task<TEntity?> GetByIdAsync(Guid id);
+        Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> predicate);
+        Task<TEntity> GetByIdAsync(Guid id);
 
-        IQueryable<TEntity?> GetAsQueryable();
+        IQueryable<TEntity> GetAsQueryable();
 
-        Task<IList<TEntity>?> GetAllAsync();
-        Task<IList<TEntity>?> GetAllAsync(Expression<Func<TEntity, bool>> predicate);
+        Task<IList<TEntity>> GetAllAsync();
+        Task<IList<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate);
 
         //HTTP POST
         Task<bool> AddAsync(TEntity entity);

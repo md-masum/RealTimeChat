@@ -9,7 +9,7 @@ namespace Ui.Pages
         private UserUpdateDto _userUpdate = new UserUpdateDto();
 
         [Inject]
-        public IUserService? UserService { get; set; }
+        public IUserService UserService { get; set; }
 
         [Inject]
         public HttpInterceptorService Interceptor { get; set; }
@@ -25,14 +25,14 @@ namespace Ui.Pages
         {
             Interceptor.RegisterEvent();
 
-            var data = await UserService!.GetCurrentUser();
+            var data = await UserService.GetCurrentUser();
             if (data.IsSuccess)
             {
-                UserData = data.Data!;
+                UserData = data.Data;
             }
             else
             {
-                Error = data.Message!;
+                Error = data.Message;
                 ShowErrorMessage = true;
             }
             IsInEditState = false;
@@ -40,14 +40,14 @@ namespace Ui.Pages
 
         public async Task Update()
         {
-            var result = await UserService!.UpdateUser(_userUpdate);
+            var result = await UserService.UpdateUser(_userUpdate);
             if (!result.IsSuccess)
             {
-                Error = result.Message!;
+                Error = result.Message;
                 ShowErrorMessage = true;
             }
 
-            UserData = result.Data!;
+            UserData = result.Data;
             IsInEditState = false;
         }
 

@@ -6,17 +6,17 @@ namespace Ui.Models.Auth.Request
     {
         [Required]
         [EmailAddress]
-        public string? EmailAddress { get; set; }
+        public string EmailAddress { get; set; }
 
         [Required]
-        public string? CurrentPassword { get; set; }
+        public string CurrentPassword { get; set; }
 
         [Required]
         [MinLength(6)]
-        public string? NewPassword { get; set; }
+        public string NewPassword { get; set; }
 
         [Required]
         [Compare("NewPassword")]
-        public string? ConfirmPassword { get; set; }
+        public string ConfirmPassword { get; set; }
     }
 }

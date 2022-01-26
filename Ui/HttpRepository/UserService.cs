@@ -24,7 +24,7 @@ namespace Ui.HttpRepository
 
             }
             var result = JsonSerializer.Deserialize<ApiResponse<UserDto>>(userContent, _options);
-            return result!;
+            return result;
         }
 
         public async Task<ApiResponse<UserDto>> UpdateUser(UserUpdateDto request)
@@ -38,7 +38,7 @@ namespace Ui.HttpRepository
 
             }
             var result = JsonSerializer.Deserialize<ApiResponse<UserDto>>(updateContent, _options);
-            return result!;
+            return result;
         }
 
         public async Task<UserDto> GetAllUser()

@@ -1,10 +1,7 @@
-﻿using System.Net.Http.Headers;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using Ui.AuthProviders;
 using Ui.Models;
-using Ui.Models.Auth.Response;
 using Ui.Response;
 
 namespace Ui.HttpRepository
@@ -20,13 +17,13 @@ namespace Ui.HttpRepository
         }
         public async Task<ApiResponse<List<ChatMessage>>> GetConversationAsync(string contactId)
         {
-            var data =  (await _httpClient.GetFromJsonAsync<ApiResponse<List<ChatMessage>>>($"api/chat/{contactId}"))!;
+            var data =  await _httpClient.GetFromJsonAsync<ApiResponse<List<ChatMessage>>>($"api/chat/{contactId}");
             return data;
         }
         public async Task<ApiResponse<List<UserDto>>> GetUsersAsync()
         {
             var data = await _httpClient.GetFromJsonAsync<ApiResponse<List<UserDto>>>("api/chat/users");
-            return data!;
+            return data;
         }
         public async Task<ApiResponse<List<ChatMessage>>> SaveMessageAsync(SaveOrUpdateMessage message)
         {

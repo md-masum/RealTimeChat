@@ -9,7 +9,7 @@ namespace Core.Common.CustomValidationAttributes
         {
             _arrayLength = arrayLength;
         }
-        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             if (value is IEnumerable<object>)
             {

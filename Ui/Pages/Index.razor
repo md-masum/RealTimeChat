@@ -31,7 +31,7 @@ Welcome to your new app.
                 await HubConnection.StartAsync();
             }
 
-            HubConnection.On<string, string, string>("ReceiveChatNotification", async (senderName, receiver, sender) =>
+            HubConnection.On<string>("ReceiveChatNotification", async (senderName) =>
             {
                 var encodedMsg = $"You got new message from {senderName}";
                 await _toastService.ShowInfo(encodedMsg, 5000);

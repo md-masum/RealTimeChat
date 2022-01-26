@@ -1,5 +1,4 @@
 ﻿using Syncfusion.Blazor.Notifications;
-using Ui.Models;
 
 namespace Ui.Service
 {

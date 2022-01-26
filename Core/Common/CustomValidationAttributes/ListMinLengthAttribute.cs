@@ -11,7 +11,7 @@ namespace Core.Common.CustomValidationAttributes
             _minLength = minLength;
         }
 
-        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             if (value is IEnumerable<object>)
             {

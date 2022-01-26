@@ -3,7 +3,7 @@
     public class CustomException : Exception
     {
         private const string DefaultMessage = "An Error occured.";
-        public List<string>? Errors { get; }
+        public List<string> Errors { get; }
 
 
         public CustomException() : base(DefaultMessage)

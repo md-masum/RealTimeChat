@@ -81,7 +81,7 @@
                     <Template>
                         @{
                             UserDto? currentData = context;
-                            <div class="e-list-wrapper e-list-multi-line e-list-avatar" @onclick="(async (e) => await OnSelect(currentData))">
+                            <div class="e-list-wrapper e-list-multi-line e-list-avatar" @onclick="async (e) => await OnSelect(currentData)">
                                 <span id="showUI" class='e-avatar e-avatar-circle' icon=@context.UserName?.Substring(0, 1).ToUpper()> @context.UserName?.Substring(0, 1).ToUpper()</span>
                                 <span class="e-list-item-header">@context.UserName</span>
                                 <span class="e-list-content">@context.Email</span>

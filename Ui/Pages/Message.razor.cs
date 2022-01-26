@@ -8,13 +8,12 @@ namespace Ui.Pages
 {
     public partial class Message
     {
-        [CascadingParameter] public HubConnection? HubConnection { get; set; }
-        public List<UserDto>? UserList { get; set; }
-        public List<ChatMessage>? ChatMessage { get; set; }
-        public UserDto? Receiver { get; set; }
+        [CascadingParameter] public HubConnection HubConnection { get; set; }
+        public List<UserDto> UserList { get; set; }
+        public List<ChatMessage> ChatMessage { get; set; }
+        public UserDto Receiver { get; set; }
 
-        private string? _messageInput;
-        private SfTextBox? _sfTextBox;
+        private SfTextBox _sfTextBox;
 
         protected override async Task OnInitializedAsync()
         {
@@ -30,23 +29,14 @@ namespace Ui.Pages
                 await HubConnection.StartAsync();
             }
 
-            HubConnection.On<string, string, string>("ReceiveMessage", (sender, receiver, message) =>
+            HubConnection.On<ChatMessage>("ReceiveMessage", (message) =>
             {
-                var chatMessage = new ChatMessage
-                {
-                    Message = message,
-                    FromUserName = (UserList?.FirstOrDefault(c => c.Id == sender))?.UserName,
-                    FromUserEmail = (UserList?.FirstOrDefault(c => c.Id == sender))?.Email,
-                    FromUserId = (UserList?.FirstOrDefault(c => c.Id == sender))?.Id,
-                    ToUserName = (UserList?.FirstOrDefault(c => c.Id == receiver))?.UserName,
-                    ToUserEmail = (UserList?.FirstOrDefault(c => c.Id == receiver))?.Email,
-                    ToUserId = (UserList?.FirstOrDefault(c => c.Id == receiver))?.Id,
-                };
-                ChatMessage?.Add(chatMessage);
+                ChatMessage?.Add(message);
+                StateHasChanged();
             });
         }
 
-        private async Task OnSelect(UserDto? selectedUser)
+        private async Task OnSelect(UserDto selectedUser)
         {
             Receiver = selectedUser;
             if (Receiver is null) return;
@@ -70,9 +60,10 @@ namespace Ui.Pages
                     Message = _sfTextBox?.Value,
                     ToUserId = Receiver?.Id
                 };
-                await _chatManager.SaveMessageAsync(saveMessage);
-                await HubConnection.SendAsync("SendMessage", user.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).Select(a => a.Value).FirstOrDefault(), Receiver?.Id, _sfTextBox?.Value);
-                await HubConnection.SendAsync("ChatNotificationAsync", Receiver?.UserName, Receiver?.Id, "");
+                var chatMessage = await _chatManager.SaveMessageAsync(saveMessage);
+                // await HubConnection.SendAsync("SendMessage", user.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).Select(a => a.Value).FirstOrDefault(), Receiver?.Id, _sfTextBox?.Value);
+                // await HubConnection.SendAsync("ChatNotificationAsync", Receiver?.UserName, Receiver?.Id, "");
+                ChatMessage = chatMessage.Data;
                 StateHasChanged();
             }
         }

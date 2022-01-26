@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Text;
 using Core.Dto.Auth.Request;
 using Core.Dto.Auth.Response;
-using Core.Entity;
 using Core.Entity.Auth;
 using Core.Exceptions;
 using Core.Helpers;
@@ -165,7 +164,7 @@ namespace Service
                 var result = await _userManager.ResetPasswordAsync(account, token, model.NewPassword);
                 if (result.Succeeded)
                 {
-                    return new ApiResponse<string>(model.EmailAddress!, message: $"Password Reset Successful.");
+                    return new ApiResponse<string>(model.EmailAddress, message: $"Password Reset Successful.");
                 }
                 throw new CustomException($"Error occured while reseting the password.");
             }
@@ -183,7 +182,7 @@ namespace Service
                 if (account is null) throw new CustomException($"No Accounts Registered with {model.EmailAddress}.");
 
                 var checkOldPassword = await _signInManager.PasswordSignInAsync(account.UserName, model.CurrentPassword, false, lockoutOnFailure: false);
-                if (!checkOldPassword.Succeeded)
+                if (checkOldPassword.Succeeded)
                 {
                     throw new CustomException($"Invalid Credentials for '{account.Email}'.");
                 }
@@ -275,7 +274,7 @@ namespace Service
                 .Union(userClaims)
                 .Union(roleClaims);
 
-                var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key!));
+                var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
                 var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
 
                 var jwtSecurityToken = new JwtSecurityToken(

@@ -41,22 +41,22 @@ namespace Repository.Repositories
             return await SaveChangeAsync();
         }
 
-        public virtual async Task<TEntity?> GetByIdAsync(Guid id)
+        public virtual async Task<TEntity> GetByIdAsync(Guid id)
         {
             return await GetAsQueryable().FirstOrDefaultAsync(x=>x.Id == id);
         }
 
-        public virtual async Task<IList<TEntity>?> GetAllAsync()
+        public virtual async Task<IList<TEntity>> GetAllAsync()
         {
             return await GetAsQueryable().ToListAsync();
         }
         
-        public virtual async Task<IList<TEntity>?> GetAllAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual async Task<IList<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return await GetAsQueryable().Where(predicate).ToListAsync();
         }
 
-        public virtual async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return await GetAsQueryable().Where(predicate).FirstOrDefaultAsync();
         }

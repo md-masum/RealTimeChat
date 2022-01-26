@@ -56,7 +56,7 @@ namespace Core.Extensions
             return dateTime.ToBangladeshTime().Date.FromBangladeshTimeToUtc();
         }
 
-        public static string? GetPropertyValue<T>(this T obj, string name) where T : class
+        public static string GetPropertyValue<T>(this T obj, string name) where T : class
         {
             var propName = name.Split(".");
             var dataObj = new List<object> {obj};
@@ -96,7 +96,7 @@ namespace Core.Extensions
 
         public static void UpdateObjectWithoutId<TFirst, TSecond>(this TFirst obj1, TSecond obj2)
         {
-            foreach (var property in obj2?.GetType().GetProperties()!)
+            foreach (var property in obj2?.GetType().GetProperties())
             {
                 if (property.Name == nameof(BaseEntity.Id)) continue;
                 obj1?.GetType().GetProperty(property.Name)?.SetValue(obj1, property.GetValue(obj2));
@@ -105,7 +105,7 @@ namespace Core.Extensions
         }
         public static void UpdateObject<TFirst, TSecond>(this TFirst obj1, TSecond obj2)
         {
-            foreach (var property in obj2?.GetType().GetProperties()!)
+            foreach (var property in obj2?.GetType().GetProperties())
                 obj1?.GetType().GetProperty(property.Name)?.SetValue(obj1, property.GetValue(obj2));
         }
         public static bool HasProperty(this object obj, string propertyName)

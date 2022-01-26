@@ -21,7 +21,7 @@ namespace Core.Paging
             return new PagedList<TEntity>(items, count);
         }
 
-        public static PagedList<TEntity> CreateAsync(IEnumerable<TEntity> source, int pageNumber, int pageSize, string? searchKey = null)
+        public static PagedList<TEntity> CreateAsync(IEnumerable<TEntity> source, int pageNumber, int pageSize, string searchKey = null)
         {
             var entities = source.ToList();
             var count = entities.Count;
@@ -34,7 +34,7 @@ namespace Core.Paging
             else
             {
                 var items = entities.Where(m => m != null && m.GetType().GetProperties().Any(x =>
-                        x.GetValue(m, null) != null && x.GetValue(m, null)!.ToString()!.ToLower().Contains(searchKey.ToLower())))
+                        x.GetValue(m, null) != null && x.GetValue(m, null).ToString().ToLower().Contains(searchKey.ToLower())))
                     .Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
                 return new PagedList<TEntity>(items, count);
             }

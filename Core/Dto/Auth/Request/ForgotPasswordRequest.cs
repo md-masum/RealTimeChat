@@ -6,6 +6,6 @@ namespace Core.Dto.Auth.Request
     {
         [Required]
         [EmailAddress]
-        public string? Email { get; set; }
+        public string Email { get; set; }
     }
 }

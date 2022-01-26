@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using Api.Service;
-using Core.Entity;
 using Core.Entity.Auth;
 using Core.Interfaces.Common;
 using Core.Interfaces.Repositories;
@@ -50,7 +49,7 @@ namespace Api.Extensions
 
             AddDatabase(services, configuration);
             RegisterSwagger(services);
-            RegisterCors(services);
+            RegisterCors(services, configuration);
 
             #endregion
         }
@@ -105,8 +104,8 @@ namespace Api.Extensions
                         {
                             var accessToken = context.Request.Query["access_token"];
                             var path = context.HttpContext.Request.Path;
-                            if (!string.IsNullOrEmpty(accessToken) &&
-                                (path.StartsWithSegments("/chathub")))
+                            if (string.IsNullOrEmpty(accessToken) &&
+                                path.StartsWithSegments("/chathub"))
                             {
                                 // Read the token out of the query string
                                 context.Token = accessToken;
@@ -171,15 +170,16 @@ namespace Api.Extensions
             });
         }
 
-        private static void RegisterCors(IServiceCollection services)
+        private static void RegisterCors(IServiceCollection services, ConfigurationManager configuration)
         {
+            var origin = configuration.GetSection("allowedOrigin").Get<string[]>();
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
                     builder => builder
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .SetIsOriginAllowed(_ => true)
+                        .WithOrigins(origin)
                         .AllowCredentials());
             });
         }

@@ -8,8 +8,8 @@ namespace Core.Dto
     {
         public Guid Id { get; set; }
         [Required]
-        public string? ToUserId { get; set; }
+        public string ToUserId { get; set; }
         [Required]
-        public string? Message { get; set; }
+        public string Message { get; set; }
     }
 }

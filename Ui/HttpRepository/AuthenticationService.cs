@@ -35,7 +35,7 @@ namespace Ui.HttpRepository
                 
             }
             var result = JsonSerializer.Deserialize<ApiResponse<string>>(registrationContent, _options);
-            return result!;
+            return result;
         }
 
         public async Task<ApiResponse<AuthResponse>> Login(LoginRequest request)
@@ -47,8 +47,9 @@ namespace Ui.HttpRepository
             var result = JsonSerializer.Deserialize<ApiResponse<AuthResponse>>(authContent, _options);
             if (!authResult.IsSuccessStatusCode)
                 return result;
-            await _localStorage.SetItemAsync("authToken", result.Data.Token);
-            ((AuthStateProvider)_authStateProvider).NotifyUserAuthentication(request.UserName);
+            await _localStorage.SetItemAsync("authToken", result?.Data?.Token);
+            if (request.UserName != null)
+                ((AuthStateProvider) _authStateProvider).NotifyUserAuthentication(request.UserName);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", result.Data.Token);
             return result;
         }

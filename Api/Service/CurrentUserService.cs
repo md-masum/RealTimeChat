@@ -13,9 +13,9 @@ namespace Api.Service
             Phone = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.MobilePhone);
         }
 
-        public string? UserId { get; }
-        public string? UserName { get; }
-        public string? Email { get; }
-        public string? Phone { get; }
+        public string UserId { get; }
+        public string UserName { get; }
+        public string Email { get; }
+        public string Phone { get; }
     }
 }

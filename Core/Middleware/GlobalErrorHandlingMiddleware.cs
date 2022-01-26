@@ -1,5 +1,4 @@
 using System.Net;
-using Core.Common;
 using Core.Exceptions;
 using Core.Response;
 using Microsoft.AspNetCore.Builder;
@@ -62,7 +61,7 @@ namespace Core.Middleware
 
         #region Supported Methods
 
-        private static List<string>? FilterErrorMessage(Exception ex)
+        private static List<string> FilterErrorMessage(Exception ex)
         {
             var errors = new List<string>();
             var e = ex;

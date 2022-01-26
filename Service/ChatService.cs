@@ -4,8 +4,10 @@ using Core.Entity;
 using Core.Exceptions;
 using Core.Interfaces.Common;
 using Core.Interfaces.Services;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Repository.Context;
+using Service.Hubs;
 
 namespace Service
 {
@@ -14,14 +16,18 @@ namespace Service
         private readonly ApplicationDbContext _context;
         private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
+        private readonly IHubContext<ChatHub, IChatClient> _chatHub;
+
 
         public ChatService(ApplicationDbContext context, 
             ICurrentUserService currentUserService, 
-            IMapper mapper)
+            IMapper mapper,
+            IHubContext<ChatHub, IChatClient> chatHub)
         {
             _context = context;
             _currentUserService = currentUserService;
             _mapper = mapper;
+            _chatHub = chatHub;
         }
 
         public async Task<List<UserToReturnDto>> GetAllUser()
@@ -38,6 +44,8 @@ namespace Service
             message.IsDeleteToUserUser = false;
             await _context.ChatMessages!.AddAsync(message);
             await _context.SaveChangesAsync();
+            await _chatHub.Clients.User(message.ToUserId).ReceiveMessage(_mapper.Map<ConversationToReturnDto>(message));
+            await _chatHub.Clients.User(message.ToUserId).ReceiveChatNotification(message.FromUserId);
             return await GetConversation(message.ToUserId!);
         }
 
@@ -63,7 +71,7 @@ namespace Service
             var fromUserId = _currentUserService.UserId;
             var toUserId = contactId;
             var messages = await _context.ChatMessages!
-                .Where(c => (c.FromUserId == fromUserId && c.ToUserId == toUserId) || (c.FromUserId == toUserId && c.ToUserId == fromUserId))
+                .Where(c => c.FromUserId == fromUserId && c.ToUserId == toUserId || c.FromUserId == toUserId && c.ToUserId == fromUserId)
                 // .OrderByDescending(a => a.CreatedDate)
                 // .TakeLast(50)
                 .ToListAsync();
@@ -96,7 +104,7 @@ namespace Service
             var fromUserId = _currentUserService.UserId;
             var toUserId = contactId;
             var messages = await _context.ChatMessages!
-                .Where(h => (h.FromUserId == fromUserId && h.ToUserId == toUserId) || (h.FromUserId == toUserId && h.ToUserId == fromUserId))
+                .Where(h => h.FromUserId == fromUserId && h.ToUserId == toUserId || h.FromUserId == toUserId && h.ToUserId == fromUserId)
                 .OrderByDescending(a => a.CreatedDate)
                 .ToListAsync();
 
@@ -114,7 +122,7 @@ namespace Service
             if (batchNumber >= 2)
             {
                 var messages = await _context.ChatMessages!
-                    .Where(h => (h.FromUserId == fromUserId && h.ToUserId == toUserId) || (h.FromUserId == toUserId && h.ToUserId == fromUserId))
+                    .Where(h => h.FromUserId == fromUserId && h.ToUserId == toUserId || h.FromUserId == toUserId && h.ToUserId == fromUserId)
                     .OrderByDescending(a => a.CreatedDate)
                     .TakeLast(lastTake).SkipLast(lastSkip)
                     .ToListAsync();
@@ -124,7 +132,7 @@ namespace Service
             else
             {
                 var messages = await _context.ChatMessages!
-                    .Where(h => (h.FromUserId == fromUserId && h.ToUserId == toUserId) || (h.FromUserId == toUserId && h.ToUserId == fromUserId))
+                    .Where(h => h.FromUserId == fromUserId && h.ToUserId == toUserId || h.FromUserId == toUserId && h.ToUserId == fromUserId)
                     .OrderByDescending(a => a.CreatedDate)
                     .TakeLast(lastTake)
                     .ToListAsync();

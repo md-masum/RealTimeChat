@@ -17,9 +17,9 @@ namespace Repository.Context
             _currentUserService = currentUserService;
         }
 
-        public DbSet<Test>? Tests { get; set; }
-        public DbSet<ResetPasswordTokenHistory>? ResetPasswordTokenHistories { get; set; }
-        public DbSet<ChatMessage>? ChatMessages { get; set; }
+        public DbSet<Test> Tests { get; set; }
+        public DbSet<ResetPasswordTokenHistory> ResetPasswordTokenHistories { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

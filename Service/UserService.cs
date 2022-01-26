@@ -30,13 +30,13 @@ namespace Service
         public async Task<UserToReturnDto> UpdateUser(UserUpdateRequest request)
         {
             var currentUser = await _userManager.FindByIdAsync(_currentUserService.UserId);
-            currentUser.DateOfBirth = request.DateOfBirth!;
-            currentUser.FirstName = request.FirstName!;
-            currentUser.IsActive = request.IsActive!;
-            currentUser.LastName = request.LastName!;
-            currentUser.PermanentAddress = request.PermanentAddress!;
-            currentUser.PresentAddress = request.PresentAddress!;
-            currentUser.ProfilePicture = request.ProfilePicture!;
+            currentUser.DateOfBirth = request.DateOfBirth;
+            currentUser.FirstName = request.FirstName;
+            currentUser.IsActive = request.IsActive;
+            currentUser.LastName = request.LastName;
+            currentUser.PermanentAddress = request.PermanentAddress;
+            currentUser.PresentAddress = request.PresentAddress;
+            currentUser.ProfilePicture = request.ProfilePicture;
             await _userManager.UpdateAsync(currentUser);
             return _mapper.Map<UserToReturnDto>(currentUser);
         }

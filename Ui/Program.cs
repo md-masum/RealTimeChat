@@ -18,6 +18,7 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7280") }.EnableIntercept(sp));
+builder.Services.AddLoadingBar();
 builder.Services.AddHttpClientInterceptor();
 builder.Services.AddScoped<HttpInterceptorService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
@@ -26,4 +27,5 @@ builder.Services.AddTransient<IChatService, ChatService>();
 builder.Services.AddSyncfusionBlazor(options => { options.IgnoreScriptIsolation = true; });
 builder.Services.AddSingleton<ToastService>();
 
+builder.UseLoadingBar();
 await builder.Build().RunAsync();

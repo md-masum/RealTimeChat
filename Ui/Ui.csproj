@@ -1,8 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
   </PropertyGroup>
@@ -15,6 +14,7 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.1" />
     <PackageReference Include="Syncfusion.Blazor" Version="19.4.0.43" />
     <PackageReference Include="Toolbelt.Blazor.HttpClientInterceptor" Version="10.0.0" />
+    <PackageReference Include="Toolbelt.Blazor.LoadingBar" Version="13.1.2" />
   </ItemGroup>
 
   <ItemGroup>
