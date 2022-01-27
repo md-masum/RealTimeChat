@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
-using System.Security.Claims;
 using Syncfusion.Blazor.Inputs;
 using Ui.Models;
 
@@ -61,8 +60,6 @@ namespace Ui.Pages
                     ToUserId = Receiver?.Id
                 };
                 var chatMessage = await _chatManager.SaveMessageAsync(saveMessage);
-                // await HubConnection.SendAsync("SendMessage", user.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).Select(a => a.Value).FirstOrDefault(), Receiver?.Id, _sfTextBox?.Value);
-                // await HubConnection.SendAsync("ChatNotificationAsync", Receiver?.UserName, Receiver?.Id, "");
                 ChatMessage = chatMessage.Data;
                 StateHasChanged();
             }

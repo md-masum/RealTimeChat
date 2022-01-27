@@ -17,5 +17,7 @@ namespace Core.Dto
         public string DateOfBirth { get; set; }
         public string ProfilePicture { get; set; }
         public bool IsActive { get; set; }
+
+        public IList<UserImageDto> UserImages { get; set; }
     }
 }

@@ -38,7 +38,7 @@ namespace Service.Base
             return _mapper.Map<TDto>(existing);
         }
         
-        public virtual async Task<bool> RemoveAsync(Guid id)
+        public virtual async Task<bool> RemoveAsync(string id)
         {
             var entity = await BaseRepository.GetByIdAsync(id);
             if (entity is null)
@@ -48,7 +48,7 @@ namespace Service.Base
             return await BaseRepository.RemoveAsync(entity);
         }
         
-        public virtual async Task<TDto> GetByIdAsync(Guid id)
+        public virtual async Task<TDto> GetByIdAsync(string id)
         {
             var data = await BaseRepository.GetByIdAsync(id);
             if (data is null)

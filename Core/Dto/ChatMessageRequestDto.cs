@@ -6,7 +6,7 @@ namespace Core.Dto
 {
     public class ChatMessageRequestDto : IMapFrom<ChatMessage>
     {
-        public Guid Id { get; set; }
+        public string Id { get; set; }
         [Required]
         public string ToUserId { get; set; }
         [Required]

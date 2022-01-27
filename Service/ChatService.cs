@@ -1,76 +1,102 @@
 ﻿using AutoMapper;
 using Core.Dto;
 using Core.Entity;
+using Core.Entity.Auth;
 using Core.Exceptions;
 using Core.Interfaces.Common;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Repository.Context;
 using Service.Hubs;
 
 namespace Service
 {
     public class ChatService : IChatService
     {
-        private readonly ApplicationDbContext _context;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IBaseRepository<ChatMessage> _chatMessageRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
         private readonly IHubContext<ChatHub, IChatClient> _chatHub;
 
 
-        public ChatService(ApplicationDbContext context, 
-            ICurrentUserService currentUserService, 
+        public ChatService(ICurrentUserService currentUserService, 
+            IBaseRepository<ChatMessage> chatMessageRepository,
+            UserManager<ApplicationUser> userManager,
             IMapper mapper,
             IHubContext<ChatHub, IChatClient> chatHub)
         {
-            _context = context;
             _currentUserService = currentUserService;
+            _chatMessageRepository = chatMessageRepository;
+            _userManager = userManager;
             _mapper = mapper;
             _chatHub = chatHub;
         }
 
-        public async Task<List<UserToReturnDto>> GetAllUser()
-        {
-            var allUsers = await _context.Users.Where(user => user.Id != _currentUserService.UserId).ToListAsync();
-            return _mapper.Map<List<UserToReturnDto>>(allUsers);
-        }
-
         public async Task<List<ConversationToReturnDto>> SaveMessage(ChatMessageRequestDto messageDto)
         {
+            var fromUser = await _userManager.FindByIdAsync(_currentUserService.UserId);
+            var toUser = await _userManager.FindByIdAsync(messageDto.ToUserId);
+
+            if (fromUser is null || toUser is null)
+                throw new NotFoundException("User not found");
+
             var message = _mapper.Map<ChatMessage>(messageDto);
-            message.FromUserId = _currentUserService.UserId!;
+            message.FromUserId = _currentUserService.UserId;
             message.IsDeleteFromUser = false;
-            message.IsDeleteToUserUser = false;
-            await _context.ChatMessages!.AddAsync(message);
-            await _context.SaveChangesAsync();
-            await _chatHub.Clients.User(message.ToUserId).ReceiveMessage(_mapper.Map<ConversationToReturnDto>(message));
-            await _chatHub.Clients.User(message.ToUserId).ReceiveChatNotification(message.FromUserId);
-            return await GetConversation(message.ToUserId!);
+            message.IsDeleteToUser = false;
+            message.IsRead = false;
+            message.FromUser = fromUser;
+            message.ToUser = toUser;
+
+            if (await _chatMessageRepository.AddAsync(message))
+            {
+                await _chatHub.Clients.User(message.ToUserId).ReceiveMessage(_mapper.Map<ConversationToReturnDto>(message));
+                await _chatHub.Clients.User(message.ToUserId).ReceiveChatNotification(message.FromUser.UserName);
+                return await GetConversation(message.ToUserId!);
+            }
+
+            throw new CustomException("Can't process message");
         }
 
         public async Task<List<ConversationToReturnDto>> UpdateMessage(ChatMessageRequestDto messageDto)
         {
-            var existingMessage = await _context.ChatMessages!.FirstOrDefaultAsync(c => c.Id == messageDto.Id);
+            var existingMessage = await _chatMessageRepository.GetByIdAsync(messageDto.Id);
             if (existingMessage is null) throw new NotFoundException("no message found by provided id");
 
             existingMessage.Message = messageDto.Message;
 
-            _context.ChatMessages?.Update(existingMessage);
-            await _context.SaveChangesAsync();
-            return await GetConversation(existingMessage.ToUserId!);
+            if (await _chatMessageRepository.UpdateAsync(existingMessage))
+            {
+                return await GetConversation(existingMessage.ToUserId!);
+            }
+
+            throw new CustomException("Can't update message");
         }
 
-        public async Task<List<ConversationToReturnDto>> DeleteMessage(string id)
+        public async Task<bool> DeleteMessage(string id)
         {
-            throw new NotImplementedException("feature coming soon");
+            var message = await _chatMessageRepository.GetByIdAsync(id);
+            if (message is null) throw new NotFoundException("Can't found message");
+
+            message.IsDeleteFromUser = true;
+            await _chatMessageRepository.UpdateAsync(message);
+
+            if (message.IsDeleteFromUser && message.IsDeleteToUser)
+            {
+                await _chatMessageRepository.RemoveAsync(message);
+            }
+
+            return true;
         }
 
         public async Task<List<ConversationToReturnDto>> GetConversation(string contactId)
         {
             var fromUserId = _currentUserService.UserId;
             var toUserId = contactId;
-            var messages = await _context.ChatMessages!
+            var messages = await _chatMessageRepository.GetAsQueryable()
                 .Where(c => c.FromUserId == fromUserId && c.ToUserId == toUserId || c.FromUserId == toUserId && c.ToUserId == fromUserId)
                 // .OrderByDescending(a => a.CreatedDate)
                 // .TakeLast(50)
@@ -83,9 +109,8 @@ namespace Service
         private async Task<List<ConversationToReturnDto>> MapUserToConversation(
             List<ConversationToReturnDto> conversations, string fromUserId, string toUserId)
         {
-            var user = await _context.Users.Where(c => c.Id == fromUserId || c.Id == toUserId).ToListAsync();
-            var fromUser = user.FirstOrDefault(c => c.Id == fromUserId);
-            var toUser = user.FirstOrDefault(c => c.Id == toUserId);
+            var fromUser = await _userManager.FindByIdAsync(fromUserId);
+            var toUser = await _userManager.FindByIdAsync(toUserId);
 
             foreach (var conversation in conversations)
             {
@@ -103,7 +128,7 @@ namespace Service
         {
             var fromUserId = _currentUserService.UserId;
             var toUserId = contactId;
-            var messages = await _context.ChatMessages!
+            var messages = await _chatMessageRepository.GetAsQueryable()
                 .Where(h => h.FromUserId == fromUserId && h.ToUserId == toUserId || h.FromUserId == toUserId && h.ToUserId == fromUserId)
                 .OrderByDescending(a => a.CreatedDate)
                 .ToListAsync();
@@ -121,7 +146,7 @@ namespace Service
 
             if (batchNumber >= 2)
             {
-                var messages = await _context.ChatMessages!
+                var messages = await _chatMessageRepository.GetAsQueryable()
                     .Where(h => h.FromUserId == fromUserId && h.ToUserId == toUserId || h.FromUserId == toUserId && h.ToUserId == fromUserId)
                     .OrderByDescending(a => a.CreatedDate)
                     .TakeLast(lastTake).SkipLast(lastSkip)
@@ -131,7 +156,7 @@ namespace Service
             }
             else
             {
-                var messages = await _context.ChatMessages!
+                var messages = await _chatMessageRepository.GetAsQueryable()
                     .Where(h => h.FromUserId == fromUserId && h.ToUserId == toUserId || h.FromUserId == toUserId && h.ToUserId == fromUserId)
                     .OrderByDescending(a => a.CreatedDate)
                     .TakeLast(lastTake)

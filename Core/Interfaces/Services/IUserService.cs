@@ -6,6 +6,12 @@ namespace Core.Interfaces.Services
     {
         Task<UserToReturnDto> GetCurrentUser();
         Task<UserToReturnDto> UpdateUser(UserUpdateRequest request);
-        Task<UserToReturnDto> GetAllUser();
+        Task<List<UserToReturnDto>> GetAllUser();
+        Task<bool> DeactivateUser(string id);
+        Task<bool> ActivateUser(string id);
+        Task<UserImageDto> UploadUserImage(UserImageUploadRequest request);
+        Task<bool> SetProfilePic(string imageId);
+        Task<bool> DeleteImage(string imageId);
+        Task<bool> DeleteUser(string id);
     }
 }

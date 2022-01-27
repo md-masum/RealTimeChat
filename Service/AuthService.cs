@@ -182,7 +182,7 @@ namespace Service
                 if (account is null) throw new CustomException($"No Accounts Registered with {model.EmailAddress}.");
 
                 var checkOldPassword = await _signInManager.PasswordSignInAsync(account.UserName, model.CurrentPassword, false, lockoutOnFailure: false);
-                if (checkOldPassword.Succeeded)
+                if (!checkOldPassword.Succeeded)
                 {
                     throw new CustomException($"Invalid Credentials for '{account.Email}'.");
                 }
@@ -228,7 +228,7 @@ namespace Service
             var user = await _userManager.FindByEmailAsync(email);
             return user;
         }
-        
+
         #region Helper Method
 
         public async Task<IEnumerable<Claim>> GetUserClaims(ApplicationUser user)

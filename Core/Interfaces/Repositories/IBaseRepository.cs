@@ -7,7 +7,7 @@ namespace Core.Interfaces.Repositories
     {
         //HTTP GET
         Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> predicate);
-        Task<TEntity> GetByIdAsync(Guid id);
+        Task<TEntity> GetByIdAsync(string id);
 
         IQueryable<TEntity> GetAsQueryable();
 

@@ -18,13 +18,6 @@ namespace Api.Controllers
             _chatService = chatService;
         }
 
-        [HttpGet("users")]
-        public async Task<ActionResult<ApiResponse<List<UserToReturnDto>>>> GetUsersAsync()
-        {
-            var response = await _chatService.GetAllUser();
-            return Ok(new ApiResponse<List<UserToReturnDto>>(response));
-        }
-
         [HttpPost]
         public async Task<ActionResult<ApiResponse<List<ConversationToReturnDto>>>> SaveMessageAsync(ChatMessageRequestDto message)
         {
@@ -47,10 +40,10 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<ApiResponse<List<ConversationToReturnDto>>>> DeleteMessageAsync(string id)
+        public async Task<ActionResult<ApiResponse<bool>>> DeleteMessageAsync(string id)
         {
             var response = await _chatService.DeleteMessage(id);
-            return Ok(new ApiResponse<List<ConversationToReturnDto>>(response));
+            return Ok(new ApiResponse<bool>(response));
         }
     }
 }

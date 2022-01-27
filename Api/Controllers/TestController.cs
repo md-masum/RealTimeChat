@@ -28,7 +28,7 @@ namespace Api.Controllers
         }
         
         [HttpGet("{id}")]
-        public async Task<ActionResult<ApiResponse<TestDto>>> Get(Guid id)
+        public async Task<ActionResult<ApiResponse<TestDto>>> Get(string id)
         {
             var test = await _testService.GetByIdAsync(id);
             return Ok(new ApiResponse<TestDto>(test));
@@ -49,7 +49,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id)
+        public async Task<ActionResult<ApiResponse<bool>>> Delete(string id)
         {
             var test = await _testService.RemoveAsync(id);
             return Ok(new ApiResponse<bool>(test));

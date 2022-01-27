@@ -1,5 +1,4 @@
-﻿using Core.Dto;
-using Core.Interfaces.Common;
+﻿using Core.Interfaces.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 

@@ -12,7 +12,7 @@ namespace Core.Interfaces.Services
         Task<IList<TDto>> GetTop(int number);
 
         //HTTP GET SINGLE
-        Task<TDto> GetByIdAsync(Guid id);
+        Task<TDto> GetByIdAsync(string id);
         Task<TDto> GetAsync(Expression<Func<TEntity, bool>> predicate);
 
         //HTTP POST
@@ -22,6 +22,6 @@ namespace Core.Interfaces.Services
         Task<TDto> UpdateAsync(TDto entity);
 
         //HTTP DELETE
-        Task<bool> RemoveAsync(Guid id);
+        Task<bool> RemoveAsync(string id);
     }
 }

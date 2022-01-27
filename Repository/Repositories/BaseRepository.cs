@@ -41,9 +41,9 @@ namespace Repository.Repositories
             return await SaveChangeAsync();
         }
 
-        public virtual async Task<TEntity> GetByIdAsync(Guid id)
+        public virtual async Task<TEntity> GetByIdAsync(string id)
         {
-            return await GetAsQueryable().FirstOrDefaultAsync(x=>x.Id == id);
+            return await GetAsQueryable().FirstOrDefaultAsync(x=>x.Id.ToString() == id);
         }
 
         public virtual async Task<IList<TEntity>> GetAllAsync()
