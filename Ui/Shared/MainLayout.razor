@@ -11,47 +11,46 @@
         <div class="top-row px-4">
             <AuthLinks />
         </div>
-        <CascadingValue Value="_hubConnection">
+        <div class="content px-4">
             @Body
-        </CascadingValue>
+        </div>
+        <div class="botom-row">
+            footer
+        </div>
     </main>
-    <footer>
-        <div></div>
-    </footer>
 </div>
 
 @code
 {
-    private HubConnection _hubConnection;
+    
 
     protected override async Task OnInitializedAsync()
     {
         if (!await _authenticationService.IsUserAuthenticated())
         {
-            StateHasChanged();
             _navigationManager.NavigateTo("/login");
         }
         else
         {
-            _hubConnection = new HubConnectionBuilder()
+            _store.HubConnection = new HubConnectionBuilder()
                 .WithUrl("https://localhost:7280/chathub", options =>
                 {
                     options.AccessTokenProvider = async () => await _authenticationService.GetAccessToken();
                 })
                 .Build();
 
-            await _hubConnection.StartAsync();
+            await _store.HubConnection.StartAsync();
         }
     }
 
         public bool IsConnected =>
-            _hubConnection is {State: HubConnectionState.Connected};
+            _store.HubConnection is {State: HubConnectionState.Connected};
 
         public async ValueTask DisposeAsync()
         {
-            if (_hubConnection is not null)
+            if (_store.HubConnection is not null)
             {
-                await _hubConnection.DisposeAsync();
+                await _store.HubConnection.DisposeAsync();
             }
         }
 }

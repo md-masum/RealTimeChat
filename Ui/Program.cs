@@ -8,6 +8,7 @@ using Ui;
 using Ui.AuthProviders;
 using Ui.HttpRepository;
 using Ui.Service;
+using Ui.Store;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -25,7 +26,10 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddTransient<IChatService, ChatService>();
 builder.Services.AddSyncfusionBlazor(options => { options.IgnoreScriptIsolation = true; });
+
+//global services
 builder.Services.AddSingleton<ToastService>();
+builder.Services.AddSingleton<StoreContainer>();
 
 builder.UseLoadingBar();
 await builder.Build().RunAsync();

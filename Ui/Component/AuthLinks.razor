@@ -1,14 +1,14 @@
 ﻿<AuthorizeView>
     <Authorized>
         Hello,
-        @if (context.User.Identity != null)
+        @if (UserName != null)
         {
-            @context.User.Identity.Name
+            @UserName
         }
-        <a href="Logout">Log out</a>
+        <a href="logout">Log out</a>
     </Authorized>
     <NotAuthorized>
-        <a href="Registration">Register</a>
-        <a href="Login">Log in</a>
+        <a href="registration">Register</a>
+        <a href="login">Log in</a>
     </NotAuthorized>
 </AuthorizeView>

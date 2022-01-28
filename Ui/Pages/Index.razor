@@ -7,35 +7,23 @@
 
 Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
-
 @code
 {
-    [CascadingParameter] public HubConnection? HubConnection { get; set; }
-
     protected override async Task OnInitializedAsync()
     {
-        if (!await _authenticationService.IsUserAuthenticated())
+        _store.HubConnection ??= new HubConnectionBuilder()
+            .WithUrl("https://localhost:7280/chathub",
+                options => { options.AccessTokenProvider = async () => await _authenticationService.GetAccessToken(); })
+            .Build();
+        if (_store.HubConnection.State == HubConnectionState.Disconnected)
         {
-            StateHasChanged();
-            _navigationManager.NavigateTo("/login");
+            await _store.HubConnection.StartAsync();
         }
-        else
-        {
-            HubConnection ??= new HubConnectionBuilder()
-                .WithUrl("https://localhost:7280/chathub",
-                    options => { options.AccessTokenProvider = async () => await _authenticationService.GetAccessToken(); })
-                .Build();
-            if (HubConnection.State == HubConnectionState.Disconnected)
-            {
-                await HubConnection.StartAsync();
-            }
 
-            HubConnection.On<string>("ReceiveChatNotification", async (senderName) =>
-            {
-                var encodedMsg = $"You got new message from {senderName}";
-                await _toastService.ShowInfo(encodedMsg, 5000);
-            });
-        }
+        _store.HubConnection.On<string>("ReceiveChatNotification", async (senderName) =>
+        {
+            var encodedMsg = $"You got new message from {senderName}";
+            await _toastService.ShowInfo(encodedMsg, 5000);
+        });
     }
 }

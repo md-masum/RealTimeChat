@@ -6,10 +6,33 @@
 
 main {
     flex: 1;
+    height: 100vh;
 }
 
 .sidebar {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+}
+.botom-row {
+    background-color: #f7f7f7;
+    border-top: 1px solid #d6d5d5;
+    justify-content: flex-end;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+}
+.botom-row ::deep a, .botom-row ::deep .btn-link {
+        white-space: nowrap;
+        margin-left: 1.5rem;
+        text-decoration: none;
+}
+
+.botom-row ::deep a:hover, .botom-row ::deep .btn-link:hover {
+            text-decoration: underline;
+}
+
+.botom-row ::deep a:first-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
 }
 
 .top-row {
@@ -68,6 +91,12 @@ main {
         z-index: 1;
     }
 
+    .botom-row {
+        position: sticky;
+        bottom: 0;
+        z-index: 1;
+    }
+
     .top-row.auth ::deep a:first-child {
         flex: 1;
         text-align: right;
@@ -75,6 +104,11 @@ main {
     }
 
     .top-row, article {
+        padding-left: 2rem !important;
+        padding-right: 1.5rem !important;
+    }
+
+    .botom-row, article {
         padding-left: 2rem !important;
         padding-right: 1.5rem !important;
     }

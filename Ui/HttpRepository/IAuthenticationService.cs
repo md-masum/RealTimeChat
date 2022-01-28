@@ -11,5 +11,8 @@ namespace Ui.HttpRepository
         Task<string> GetAccessToken();
         Task Logout();
         Task<bool> IsUserAuthenticated();
+        Task<string> GetCurrentUserName();
+        Task<string> GetCurrentUserEmail();
+        Task<string> GetCurrentUserId();
     }
 }
