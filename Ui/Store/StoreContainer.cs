@@ -7,13 +7,13 @@ namespace Ui.Store
     public class StoreContainer
     {
         private readonly IJSInProcessRuntime _js;
-
         public StoreContainer(IJSInProcessRuntime js)
         {
             _js = js;
-            var data = _js.Invoke<string>(JsInteropConstant.GetSessionStorage, nameof(CurrentCount));
-            int.TryParse(data, out _currentCount);
+            PersistState();
         }
+
+        #region Counter
         private int _currentCount;
 
         public int CurrentCount
@@ -26,11 +26,37 @@ namespace Ui.Store
                 NotifyStateChanged();
             }
         }
+        #endregion
+
+        #region IsLoading
+        private bool _isLoading;
+
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set
+            {
+                _isLoading = value;
+                NotifyStateChanged();
+            }
+        }
+        #endregion
 
         public HubConnection HubConnection { get; set; }
 
         public event Action OnChange;
 
         private void NotifyStateChanged() => OnChange?.Invoke();
+
+
+        #region PersistState
+
+        private void PersistState()
+        {
+            var data = _js.Invoke<string>(JsInteropConstant.GetSessionStorage, nameof(CurrentCount));
+            int.TryParse(data, out _currentCount);
+        }
+
+        #endregion
     }
 }

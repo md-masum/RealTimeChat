@@ -15,9 +15,9 @@ namespace Ui.HttpRepository
     {
         private readonly HttpClient _client;
         private readonly AuthenticationStateProvider _authStateProvider;
-        private readonly ILocalStorageService _localStorage;
+        private readonly ISyncLocalStorageService _localStorage;
         private readonly JsonSerializerOptions _options;
-        public AuthenticationService(HttpClient client, AuthenticationStateProvider authStateProvider, ILocalStorageService localStorage)
+        public AuthenticationService(HttpClient client, AuthenticationStateProvider authStateProvider, ISyncLocalStorageService localStorage)
         {
             _client = client;
             _authStateProvider = authStateProvider;
@@ -48,16 +48,16 @@ namespace Ui.HttpRepository
             var result = JsonSerializer.Deserialize<ApiResponse<AuthResponse>>(authContent, _options);
             if (!authResult.IsSuccessStatusCode)
                 return result;
-            await _localStorage.SetItemAsync("authToken", result?.Data?.Token);
+            _localStorage.SetItem("authToken", result?.Data?.Token);
             if (request.UserName != null)
                 ((AuthStateProvider) _authStateProvider).NotifyUserAuthentication(result?.Data?.Token);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", result?.Data?.Token);
             return result;
         }
 
-        public async Task<string> GetAccessToken()
+        public Task<string> GetAccessToken()
         {
-            return await _localStorage.GetItemAsync<string>("authToken");
+            return Task.FromResult(_localStorage.GetItem<string>("authToken"));
         }
 
         public async Task<bool> IsUserAuthenticated()
@@ -115,11 +115,12 @@ namespace Ui.HttpRepository
             return string.Empty;
         }
 
-        public async Task Logout()
+        public Task Logout()
         {
-            await _localStorage.RemoveItemAsync("authToken");
+            _localStorage.RemoveItem("authToken");
             ((AuthStateProvider)_authStateProvider).NotifyUserLogout();
             _client.DefaultRequestHeaders.Authorization = null;
+            return Task.CompletedTask;
         }
     }
 }

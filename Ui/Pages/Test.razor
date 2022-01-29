@@ -1,3 +1,51 @@
 ﻿@page "/test"
-<h3>Test</h3>
 
+<div class="row">
+    <div class="col-8">
+        <h3>Test</h3>
+    </div>
+    <div class="col-4 d-flex flex-row-reverse">
+        <button class="btn btn-outline-primary">Create New</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 mt-4">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                @{
+                    if (TestLists != null && TestLists.Any())
+                    {
+                        int index = 1;
+                        foreach (var item in TestLists)
+                        {
+                            <tr>
+                                <td>@index</td>
+                                <td>@item.Name</td>
+                                <td>@item.Email</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger" @onclick="(async () => await DeleteTest(item.Id))">Delete</button>
+                                    <button class="btn btn-sm btn-primary" @onclick="(async () => await EditTest(item))">Edit</button>
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    }
+                    else
+                    {
+                        <SfSpinner @bind-Visible="_store.IsLoading"></SfSpinner>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -2,17 +2,24 @@
 
 namespace Ui.Service
 {
+    public enum ToastPositions
+    {
+        Center,
+        Right,
+        Left
+    }
+
     public class ToastService
     {
         public ToastService()
         {
             SfToastObj = new SfToast();
-            ToastPosition = "Right";
+            ToastPosition = ToastPositions.Right.ToString();
         }
 
         public SfToast SfToastObj { get; set; }
         public string ToastPosition { get; set; }
-        public async Task ShowInfo(string message, int timeOut)
+        public void ShowInfo(string message, int timeOut)
         {
             var toastModel = new ToastModel
             {
@@ -22,10 +29,10 @@ namespace Ui.Service
                 Timeout = timeOut,
                 CssClass = "e-toast-info"
             };
-            await SfToastObj.ShowAsync(toastModel);
+            SfToastObj.Show(toastModel);
         }
 
-        public async Task ShowWarn(string message, int timeOut)
+        public void ShowWarn(string message, int timeOut)
         {
             var toastModel = new ToastModel
             {
@@ -35,10 +42,10 @@ namespace Ui.Service
                 Timeout = timeOut,
                 CssClass = "e-toast-warning"
             };
-            await SfToastObj.ShowAsync(toastModel);
+            SfToastObj.Show(toastModel);
         }
 
-        public async Task ShowSuccess(string message, int timeOut)
+        public void ShowSuccess(string message, int timeOut)
         {
             var toastModel = new ToastModel
             {
@@ -48,10 +55,10 @@ namespace Ui.Service
                 Timeout = timeOut,
                 CssClass = "e-toast-success"
             };
-            await SfToastObj.ShowAsync(toastModel);
+            SfToastObj.Show(toastModel);
         }
 
-        public async Task ShowError(string message, int timeOut)
+        public void ShowError(string message, int timeOut)
         {
             var toastModel = new ToastModel
             {
@@ -61,7 +68,7 @@ namespace Ui.Service
                 Timeout = timeOut,
                 CssClass = "e-toast-danger"
             };
-            await SfToastObj.ShowAsync(toastModel);
+            SfToastObj.Show(toastModel);
         }
     }
 }

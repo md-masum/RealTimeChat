@@ -1,5 +1,6 @@
 ﻿using Core.Dto;
 using Core.Entity;
+using Core.Exceptions;
 using Core.Interfaces.Services;
 using Core.Response;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TestController : ControllerBase
     {
         private readonly ILogger<TestController> _logger;

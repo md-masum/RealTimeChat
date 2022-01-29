@@ -31,6 +31,7 @@ builder.Services.AddSyncfusionBlazor(options => { options.IgnoreScriptIsolation 
 //global services
 builder.Services.AddSingleton<ToastService>();
 builder.Services.AddSingleton<StoreContainer>();
+builder.Services.AddScoped<BaseHttpClient>();
 builder.Services.AddSingleton(services =>
     (IJSInProcessRuntime) services.GetRequiredService<IJSRuntime>());
 

@@ -11,6 +11,7 @@ Welcome to your new app.
 {
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine("Home Render");
         if (await _authenticationService.IsUserAuthenticated())
         {
             _store.HubConnection ??= new HubConnectionBuilder()
@@ -22,10 +23,10 @@ Welcome to your new app.
                 await _store.HubConnection.StartAsync();
             }
 
-            _store.HubConnection.On<string>("ReceiveChatNotification", async (senderName) =>
+            _store.HubConnection.On<string>("ReceiveChatNotification", (senderName) =>
             {
                 var encodedMsg = $"You got new message from {senderName}";
-                await _toastService.ShowInfo(encodedMsg, 5000);
+                _toastService.ShowInfo(encodedMsg, 5000);
             });
         }
         

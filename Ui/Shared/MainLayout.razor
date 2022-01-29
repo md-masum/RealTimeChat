@@ -23,10 +23,9 @@
 
 @code
 {
-    
-
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine("Mail Layout Render");
         _store.OnChange += StateHasChanged;
         if (!await _authenticationService.IsUserAuthenticated())
         {
