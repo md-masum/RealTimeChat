@@ -11,19 +11,23 @@ Welcome to your new app.
 {
     protected override async Task OnInitializedAsync()
     {
-        _store.HubConnection ??= new HubConnectionBuilder()
-            .WithUrl("https://localhost:7280/chathub",
-                options => { options.AccessTokenProvider = async () => await _authenticationService.GetAccessToken(); })
-            .Build();
-        if (_store.HubConnection.State == HubConnectionState.Disconnected)
+        if (await _authenticationService.IsUserAuthenticated())
         {
-            await _store.HubConnection.StartAsync();
-        }
+            _store.HubConnection ??= new HubConnectionBuilder()
+                .WithUrl("https://localhost:7280/chathub",
+                    options => { options.AccessTokenProvider = async () => await _authenticationService.GetAccessToken(); })
+                .Build();
+            if (_store.HubConnection.State == HubConnectionState.Disconnected)
+            {
+                await _store.HubConnection.StartAsync();
+            }
 
-        _store.HubConnection.On<string>("ReceiveChatNotification", async (senderName) =>
-        {
-            var encodedMsg = $"You got new message from {senderName}";
-            await _toastService.ShowInfo(encodedMsg, 5000);
-        });
+            _store.HubConnection.On<string>("ReceiveChatNotification", async (senderName) =>
+            {
+                var encodedMsg = $"You got new message from {senderName}";
+                await _toastService.ShowInfo(encodedMsg, 5000);
+            });
+        }
+        
     }
 }
