@@ -2,6 +2,7 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.JSInterop;
 using Syncfusion.Blazor;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 using Ui;
@@ -30,6 +31,8 @@ builder.Services.AddSyncfusionBlazor(options => { options.IgnoreScriptIsolation 
 //global services
 builder.Services.AddSingleton<ToastService>();
 builder.Services.AddSingleton<StoreContainer>();
+builder.Services.AddSingleton(services =>
+    (IJSInProcessRuntime) services.GetRequiredService<IJSRuntime>());
 
 builder.UseLoadingBar();
 await builder.Build().RunAsync();

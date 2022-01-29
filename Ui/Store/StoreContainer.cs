@@ -1,17 +1,28 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.JSInterop;
+using Ui.Shared;
 
 namespace Ui.Store
 {
     public class StoreContainer
     {
-        private string _savedString;
+        private readonly IJSInProcessRuntime _js;
 
-        public string Property
+        public StoreContainer(IJSInProcessRuntime js)
         {
-            get => _savedString ?? string.Empty;
+            _js = js;
+            var data = _js.Invoke<string>(JsInteropConstant.GetSessionStorage, nameof(CurrentCount));
+            int.TryParse(data, out _currentCount);
+        }
+        private int _currentCount;
+
+        public int CurrentCount
+        {
+            get => _currentCount;
             set
             {
-                _savedString = value;
+                _currentCount = value;
+                _js.InvokeVoid(JsInteropConstant.SetSessionStorage, nameof(CurrentCount), value);
                 NotifyStateChanged();
             }
         }

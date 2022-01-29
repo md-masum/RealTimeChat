@@ -9,7 +9,8 @@
 
     <main>
         <div class="top-row px-4">
-            <AuthLinks />
+            @_store.CurrentCount
+            <AuthLinks/>
         </div>
         <div class="content px-4">
             @Body
@@ -26,6 +27,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        _store.OnChange += StateHasChanged;
         if (!await _authenticationService.IsUserAuthenticated())
         {
             _navigationManager.NavigateTo("/login");
@@ -48,6 +50,7 @@
 
         public async ValueTask DisposeAsync()
         {
+            _store.OnChange -= StateHasChanged;
             if (_store.HubConnection is not null)
             {
                 await _store.HubConnection.DisposeAsync();

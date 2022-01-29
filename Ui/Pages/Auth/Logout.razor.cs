@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Ui.HttpRepository;
 
-namespace Ui.Pages
+namespace Ui.Pages.Auth
 {
     public partial class Logout
     {

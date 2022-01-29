@@ -2,11 +2,11 @@
 using Ui.HttpRepository;
 using Ui.Models.Auth.Request;
 
-namespace Ui.Pages
+namespace Ui.Pages.Auth
 {
     public partial class Registration
     {
-        private SignUpRequest _userForRegistration = new SignUpRequest();
+        private readonly SignUpRequest _userForRegistration = new();
 
         [Inject]
         public IAuthenticationService AuthenticationService { get; set; }

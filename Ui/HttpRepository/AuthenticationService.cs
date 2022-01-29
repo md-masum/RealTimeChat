@@ -50,8 +50,8 @@ namespace Ui.HttpRepository
                 return result;
             await _localStorage.SetItemAsync("authToken", result?.Data?.Token);
             if (request.UserName != null)
-                ((AuthStateProvider) _authStateProvider).NotifyUserAuthentication(request.UserName);
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", result.Data.Token);
+                ((AuthStateProvider) _authStateProvider).NotifyUserAuthentication(result?.Data?.Token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", result?.Data?.Token);
             return result;
         }
 

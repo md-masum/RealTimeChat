@@ -1,6 +1,6 @@
 ﻿using Ui.Models.Auth.Request;
 
-namespace Ui.Pages
+namespace Ui.Pages.Auth
 {
     public partial class Login
     {
