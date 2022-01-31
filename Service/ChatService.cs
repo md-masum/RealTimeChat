@@ -121,7 +121,7 @@ namespace Service
                 conversation.ToUserName = toUser?.UserName;
             }
 
-            return conversations;
+            return conversations.OrderBy(c => c.CreatedDate).ToList();
         }
 
         public async Task<List<ConversationToReturnDto>> GetAllConversation(string contactId)

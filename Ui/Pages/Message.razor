@@ -48,26 +48,6 @@
                         </div>
                     </div>
                 </div>
-
-
-
-
-
-                @*<SfListView ID="list" DataSource="@ChatMessage" EnableVirtualization="true"  CssClass="e-list-template ui-list" HeaderTitle="@Receiver.Email" Height="500px" ShowHeader="true">
-                    <ListViewFieldSettings Id="Id" Text="Name" TValue="ChatMessage"></ListViewFieldSettings>
-                    <ListViewTemplates TValue="ChatMessage">
-                        <Template>
-                            @{
-                                ChatMessage? currentData = context;
-                                <div class="e-list-wrapper e-list-multi-line e-list-avatar" @onclick="(async (e) => await OnMessageSelect(currentData))">
-                                    <span id="showUI" class='e-avatar e-avatar-circle' icon=@context.FromUserName?.Substring(0, 1).ToUpper()> @context.FromUserName?.Substring(0, 1).ToUpper()</span>
-                                    <span class='e-list-content'>@context.Message</span>
-                                </div>
-                            }
-                        
-                        </Template>
-                    </ListViewTemplates>
-                </SfListView>*@
             }
             else
             {
@@ -97,7 +77,7 @@
 }
 else
 {
-    <SfSpinner Visible="true"></SfSpinner>
+    @*<SfSpinner Visible="true"></SfSpinner>*@
 }
 
 

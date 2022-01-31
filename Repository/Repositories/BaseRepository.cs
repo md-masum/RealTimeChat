@@ -19,6 +19,7 @@ namespace Repository.Repositories
 
         public virtual async Task<bool> AddAsync(TEntity entity)
         {
+            entity.Id = Guid.NewGuid().ToString();
             _context.Add(entity);
             return await SaveChangeAsync();
         }
@@ -43,7 +44,7 @@ namespace Repository.Repositories
 
         public virtual async Task<TEntity> GetByIdAsync(string id)
         {
-            return await GetAsQueryable().FirstOrDefaultAsync(x=>x.Id.ToString() == id);
+            return await GetAsQueryable().FirstOrDefaultAsync(x=>x.Id == id);
         }
 
         public virtual async Task<IList<TEntity>> GetAllAsync()

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using Syncfusion.Blazor.Inputs;
 using Ui.Models;
 
@@ -7,7 +6,6 @@ namespace Ui.Pages
 {
     public partial class Message
     {
-        [CascadingParameter] public HubConnection HubConnection { get; set; }
         public List<UserDto> UserList { get; set; }
         public List<ChatMessage> ChatMessage { get; set; }
         public UserDto Receiver { get; set; }
@@ -16,19 +14,19 @@ namespace Ui.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            var users = await _chatManager.GetUsersAsync();
-            if (users.Data != null) UserList = users.Data;
+            var users = await _httpClient.GetAsync<List<UserDto>>("api/user/Users");
+            if (users != null && users.Any()) UserList = users;
 
-            HubConnection ??= new HubConnectionBuilder()
+            _store.HubConnection ??= new HubConnectionBuilder()
                 .WithUrl("https://localhost:7280/chathub",
                     options => { options.AccessTokenProvider = async () => await _authenticationService.GetAccessToken(); })
                 .Build();
-            if (HubConnection.State == HubConnectionState.Disconnected)
+            if (_store.HubConnection.State == HubConnectionState.Disconnected)
             {
-                await HubConnection.StartAsync();
+                await _store.HubConnection.StartAsync();
             }
 
-            HubConnection.On<ChatMessage>("ReceiveMessage", (message) =>
+            _store.HubConnection.On<ChatMessage>("ReceiveMessage", (message) =>
             {
                 ChatMessage?.Add(message);
                 StateHasChanged();
@@ -39,33 +37,26 @@ namespace Ui.Pages
         {
             Receiver = selectedUser;
             if (Receiver is null) return;
-            var messages = await _chatManager.GetConversationAsync(Receiver.Id);
-            if (messages.Data != null) ChatMessage = messages.Data;
-        }
-
-        private async Task OnMessageSelect(ChatMessage chatMessage)
-        {
-
+            var messages = await _httpClient.GetAsync<List<ChatMessage>>($"api/chat/{Receiver.Id}");
+            if (messages != null && messages.Any()) ChatMessage = messages;
         }
 
         private async Task OnSend()
         {
-            var state = await _authStateProvider.GetAuthenticationStateAsync();
-            var user = state.User;
-            if (HubConnection is not null)
+            if (_store.HubConnection is not null)
             {
                 var saveMessage = new SaveOrUpdateMessage
                 {
                     Message = _sfTextBox?.Value,
                     ToUserId = Receiver?.Id
                 };
-                var chatMessage = await _chatManager.SaveMessageAsync(saveMessage);
-                ChatMessage = chatMessage.Data;
+                var chatMessage = await _httpClient.PostAsync<List<ChatMessage>, SaveOrUpdateMessage>("api/chat", saveMessage);
+                ChatMessage = chatMessage;
                 StateHasChanged();
             }
         }
 
         public bool IsConnected =>
-            HubConnection?.State == HubConnectionState.Connected;
+            _store.HubConnection?.State == HubConnectionState.Connected;
     }
 }
