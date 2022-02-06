@@ -2,78 +2,106 @@
 
 <PageTitle>Profile</PageTitle>
 
-@if (ShowErrorMessage)
-{
-    <div class="alert alert-danger" role="alert">
-        <p>@Error</p>
-    </div>
-}
-
 @if (IsInEditState)
 {
-    <EditForm Model="_userUpdate" OnValidSubmit="Update" class="card card-body bg-light mt-5">
-    <DataAnnotationsValidator />
-    <div class="form-group row mb-2">
-        <label for="firstName" class="col-md-2 col-form-label">First Name:</label>
-        <div class="col-md-10">
-            <InputText id="firstName" class="form-control" @bind-Value="_userUpdate.FirstName" />
-            <ValidationMessage For="@(() => _userUpdate.FirstName)" />
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <img src="icon-192.png"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-8">
+                <h6>Basic Info</h6>
+            <hr/>
+            <EditForm Model="_userUpdate" OnValidSubmit="Update" class="">
+                <div class="row">
+                    <DataAnnotationsValidator />
+                    <div class="col-md-6 col-sm-12 mt-3">
+                        <label for="FirstName" class="form-label col-form-label-sm">First name</label>
+                        <InputText id="FirstName" class="form-control e-control e-textbox e-lib e-input" @bind-Value="_userUpdate.FirstName" />
+                        <ValidationMessage For="@(() => _userUpdate.FirstName)" />
+                    </div>
+                    <div class="col-md-6 col-sm-12 mt-3">
+                        <label for="LastName" class="form-label col-form-label-sm">Last name</label>
+                        <InputText id="LastName" class="form-control e-control e-textbox e-lib e-input" @bind-Value="_userUpdate.LastName" />
+                        <ValidationMessage For="@(() => _userUpdate.LastName)" />
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <label for="Email" class="form-label col-form-label-sm">Email Address</label>
+                        <input type="text" class="form-control e-control e-textbox e-lib e-input" readonly value="@UserData.Email" id="Email"/>
+                    </div>
+                    <div class="col-sm-12 col-md-6 mt-3">
+                        <label for="Phone" class="form-label col-form-label-sm">Phone Number</label>
+                        <input type="text" class="form-control e-control e-textbox e-lib e-input" readonly value="@UserData.PhoneNumber" id="Phone"/>
+                    </div>
+                    <div class="col-sm-12 col-md-6 mt-3">
+                        <label for="DateOfBirth" class="form-label col-form-label-sm">Date Of Birth</label>
+                        <InputDate id="DateOfBirth" class="form-control e-control e-textbox e-lib e-input" @bind-Value="_userUpdate.DateOfBirth" />
+                        <ValidationMessage For="@(() => _userUpdate.DateOfBirth)" />
+                    </div>
+                    <div class="col-sm-12 col-md-6 mt-3">
+                        <label for="PresentAddress" class="form-label col-form-label-sm">Present Address</label>
+                        <InputTextArea id="PresentAddress" rows="5" class="form-control e-control e-textbox e-lib e-input" @bind-Value="_userUpdate.PresentAddress" />
+                        <ValidationMessage For="@(() => _userUpdate.PresentAddress)" />
+                    </div>
+                    <div class="col-sm-12 col-md-6 mt-3">
+                        <label for="PermanentAddress" class="form-label col-form-label-sm">Permanent Address</label>
+                        <InputTextArea id="PermanentAddress" rows="5" class="form-control e-control e-textbox e-lib e-input" @bind-Value="_userUpdate.PermanentAddress" />
+                        <ValidationMessage For="@(() => _userUpdate.PermanentAddress)" />
+                    </div>
+                    <div class="col-md-12 text-right mt-3">
+                        <button type="button" @onclick="DisabledEditState" class="btn btn-info btn-sm">Cancel</button>
+                        <button type="submit" class="btn btn-success btn-sm">Save</button>
+                    </div>
+                </div>
+            </EditForm>
+            </div>
         </div>
     </div>
-
-    <div class="form-group row mb-2">
-        <label for="lastName" class="col-md-2 col-form-label">Last Name:</label>
-        <div class="col-md-10">
-            <InputText id="lastName" class="form-control" @bind-Value="_userUpdate.LastName" />
-            <ValidationMessage For="@(() => _userUpdate.LastName)" />
-        </div>
-    </div>
-    
-    <div class="form-group row mb-2">
-        <label for="presentAddress" class="col-md-2 col-form-label">Present Address:</label>
-        <div class="col-md-10">
-            <InputTextArea id="presentAddress" class="form-control" @bind-Value="_userUpdate.PresentAddress" />
-            <ValidationMessage For="@(() => _userUpdate.PresentAddress)" />
-        </div>
-    </div>
-
-    <div class="form-group row mb-2">
-        <label for="permanentAddress" class="col-md-2 col-form-label">Password:</label>
-        <div class="col-md-10">
-            <InputTextArea id="permanentAddress" class="form-control" @bind-Value="_userUpdate.PermanentAddress" />
-            <ValidationMessage For="@(() => _userUpdate.PermanentAddress)" />
-        </div>
-    </div>
-
-    <div class="form-group row mb-2">
-        <label for="dbo" class="col-md-2 col-form-label">Birth Date:</label>
-        <div class="col-md-10">
-            <InputText id="dbo" class="form-control" @bind-Value="_userUpdate.DateOfBirth" />
-            <ValidationMessage For="@(() => _userUpdate.DateOfBirth)" />
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12 text-right">
-            <button type="button" @onclick="DisabledEditState" class="btn btn-success">Cancel</button>
-            <button type="submit" class="btn btn-success">Update</button>
-        </div>
-    </div>
-</EditForm>
 }
 else
 {
-    <ul class="list-group">
-        <li class="list-group-item">User Name        : @UserData.UserName</li>
-        <li class="list-group-item">Email            : @UserData.Email</li>
-        <li class="list-group-item">Phone Number     : @UserData.PhoneNumber</li>
-        <li class="list-group-item">First Name       : @UserData.FirstName</li>
-        <li class="list-group-item">Last Name        : @UserData.LastName</li>
-        <li class="list-group-item">Present Address  : @UserData.PresentAddress</li>
-        <li class="list-group-item">Permanent Address: @UserData.PermanentAddress</li>
-        <li class="list-group-item">Date Of Birth    : @UserData.DateOfBirth</li>
-        <li class="list-group-item">Profile Picture  : @UserData.ProfilePicture</li>
-        <li class="list-group-item">Active           : @UserData.IsActive</li>
-    </ul>
-    <button type="button" @onclick="EnableEditState" class="btn btn-success">Update</button>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col-8">
+                <h6>Basic Info</h6>
+                <hr/>
+                <div class="row">
+                    <div class="col-md-6 col-sm-12 mt-3">
+                        <label for="FirstName" class="form-label col-form-label-sm">First name</label>
+                        <input type="text" class="form-control e-control e-textbox e-lib e-input" readonly value="@UserData.FirstName" id="FirstName">
+                    </div>
+                    <div class="col-md-6 col-sm-12 mt-3">
+                        <label for="LastName" class="form-label col-form-label-sm">Last name</label>
+                        <input type="text" class="form-control e-control e-textbox e-lib e-input" readonly value="@UserData.LastName" id="LastName">
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <label for="Email" class="form-label col-form-label-sm">Email Address</label>
+                        <input type="text" class="form-control e-control e-textbox e-lib e-input" readonly value="@UserData.Email" id="Email" />
+                    </div>
+                    <div class="col-sm-12 col-md-6 mt-3">
+                        <label for="Phone" class="form-label col-form-label-sm">Phone Number</label>
+                        <input type="text" class="form-control e-control e-textbox e-lib e-input" readonly value="@UserData.PhoneNumber" id="Phone" />
+                    </div>
+                    <div class="col-sm-12 col-md-6 mt-3">
+                        <label for="DateOfBirth" class="form-label col-form-label-sm">Date Of Birth</label>
+                        <input type="text" class="form-control e-control e-textbox e-lib e-input" readonly value="@UserData.DateOfBirth" id="DateOfBirth" />
+                    </div>
+                    <div class="col-sm-12 col-md-6 mt-3">
+                        <label for="PresentAddress" class="form-label col-form-label-sm">Present Address</label>
+                        <textarea type="text" class="form-control e-control e-textbox e-lib e-input" rows="5" readonly value="@UserData.PresentAddress" id="PresentAddress"></textarea>
+                    </div>
+                    <div class="col-sm-12 col-md-6 mt-3">
+                        <label for="PermanentAddress" class="form-label col-form-label-sm">Permanent Address</label>
+                        <textarea class="form-control e-control e-textbox e-lib e-input" rows="5" readonly value="@UserData.PermanentAddress" id="PermanentAddress"></textarea>
+                    </div>
+                </div>
+                <button type="button" @onclick="EnableEditState" class="btn btn-success btn-sm mt-3">Update</button>
+            </div>
+        </div>
+    </div>
 }

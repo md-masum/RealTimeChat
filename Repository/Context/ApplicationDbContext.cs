@@ -21,6 +21,7 @@ namespace Repository.Context
         public DbSet<ResetPasswordTokenHistory> ResetPasswordTokenHistories { get; set; }
         public DbSet<UserImage> UserImages { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<CallConnectionInfo> CallConnectionInfos { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

@@ -5,18 +5,18 @@
 
 @if (UserList != null && UserList.Any())
 {
-    <div class="row">
-        <div class="col-6">
+    <div class="row h-100">
+        <div class="col-6 h-100">
             @if (Receiver != null)
             {
-
-                <div id="container">
-                    <div id="sample">
-                        <SfListView ID="list"
+                string title = $"Chat: {Receiver.UserName}";
+                <div id="container" class="h-100">
+                    <div id="sample" class="h-100">
+                        <SfListView ID="listOfMessage"
                                     DataSource="@ChatMessage"
                                     ShowHeader="true"
-                                    Height="420px"
-                                    HeaderTitle="Chat">
+                                    Height="90%"
+                                    HeaderTitle="@title">
                             <ListViewFieldSettings TValue="ChatMessage" Id="Id" Text="message"></ListViewFieldSettings>
                             <ListViewTemplates TValue="ChatMessage">
                                 <Template>
@@ -30,6 +30,10 @@
                                             <div class="flex content__container flex__8 vertical padding @(currentData.FromUserId == Receiver.Id ? "right__align" : "left__align")">
                                                 <div class="bold">@currentData.Message</div>
                                                 <div class="small__font">@currentData.CreatedDate.ToString("R")</div>
+                                                <div class="small">
+                                                    <button class="btn btn-sm btn-link">edit</button>
+                                                    <button class="btn btn-sm btn-link">delete</button>
+                                                </div>
                                             </div>
                                         </div>
                                     }
@@ -37,12 +41,13 @@
                             </ListViewTemplates>
                         </SfListView>
                         <div class="flex">
-                            <div class="flex__8 padding">
-                                <SfTextBox Placeholder="Type your message"
-                                           @ref="@_sfTextBox"
+                            <div class="flex__6 padding">
+                                <SfTextBox Placeholder="Type your message" @bind-Value="_sfTextBox"
                                 ></SfTextBox>
                             </div>
-                            <div class="flex__1">
+                            <div class="flex__3">
+                                <button class="e-btn" @onclick="@OnAudioCall" disabled="@(!IsConnected)">Call</button>
+                                <button class="e-btn" @onclick="@OnVideoCall" disabled="@(!IsConnected)">Video Call</button>
                                 <button class="e-btn" @onclick="@OnSend" disabled="@(!IsConnected)">Send</button>
                             </div>
                         </div>
@@ -54,15 +59,16 @@
                 <p>No Contact Selected</p>
             }
         </div>
-        <div class="col-6">
-            <SfListView ID="list" DataSource="@UserList" EnableVirtualization="true"  CssClass="e-list-template ui-list" HeaderTitle="Contacts" Height="500px" ShowHeader="true">
+        <div class="col-6 h-100">
+            <SfListView ID="list" DataSource="@UserList" EnableVirtualization="true"  CssClass="e-list-template ui-list" HeaderTitle="Contacts" Height="50%" ShowHeader="true">
                 <ListViewFieldSettings Id="Id" Text="Name" TValue="UserDto"></ListViewFieldSettings>
                 <ListViewTemplates TValue="UserDto">
                     <Template>
                         @{
-                            UserDto? currentData = context;
-                            <div class="e-list-wrapper e-list-multi-line e-list-avatar" @onclick="async (e) => await OnSelect(currentData)">
+                            UserDto currentData = context;
+                            <div class="e-list-wrapper e-list-multi-line e-list-avatar e-list-badge" @onclick="async (e) => await OnSelect(currentData)">
                                 <span id="showUI" class='e-avatar e-avatar-circle' icon=@context.UserName?.Substring(0, 1).ToUpper()> @context.UserName?.Substring(0, 1).ToUpper()</span>
+                                <span class="e-badge icons"><span class="available"></span></span>
                                 <span class="e-list-item-header">@context.UserName</span>
                                 <span class="e-list-content">@context.Email</span>
                             </div>
@@ -71,18 +77,31 @@
                     </Template>
                 </ListViewTemplates>
             </SfListView>
-           
+            <div class="row">
+                <div class="col-6">
+                    <div id="local-video-div">
+                        <video id="local-video" autoplay></video>
+                        <button @onclick="@MuteVideo">Mute Video</button>
+                        <button @onclick="@MuteAudio">Mute Audio</button>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div id="remote-video-div">
+                        <video id="remote-video" autoplay></video>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 }
 else
 {
-    @*<SfSpinner Visible="true"></SfSpinner>*@
+    <SfSpinner Visible="@_isLoading"></SfSpinner>
 }
 
 
 <style>
-    #list {
+    #listOfMessage {
         box-shadow: 0 1px 4px #ddd;
         border-bottom: 1px solid #ddd;
     }
@@ -91,32 +110,38 @@ else
         height: 220px;
         margin: 0 auto;
         display: block;
-        max-width: 350px;
+        max-width: 100%;
     }
 
-    #list {
+    #listOfMessage {
         margin: 0 auto;
         border: 1px solid #ccc;
     }
 
-        #list .e-list-item {
+        #listOfMessage .e-list-item {
             height: auto;
             cursor: pointer;
             line-height: 22px;
             padding: 8px;
         }
 
-        #list.e-listview .e-list-header {
+        #listOfMessage.e-listview .e-list-header {
+            background-color: transparent;
+            position: sticky;
+        }
+
+        #listOfMessage .e-list-item.e-active {
             background-color: #0278d7;
-            color: white;
         }
 
-        #list .e-list-item.e-active {
-            background-color: transparent;
+        #listOfMessage .e-list-item.e-focused {
+            background-color: #0278d7;
+            color: black;
         }
 
-        #list .e-list-item.e-hover {
-            background-color: transparent;
+        #listOfMessage .e-list-item.e-hover {
+            background-color: #0278d7;
+            color: black;
         }
 
     .padding {
@@ -178,6 +203,14 @@ else
         flex: 5;
     }
 
+    .flex__6 {
+        flex: 6;
+    }
+
+    .flex__7 {
+        flex: 7;
+    }
+
     .flex__8 {
         flex: 8;
     }
@@ -194,22 +227,6 @@ else
     .small__font {
         font-size: 13px;
         margin: 2px 0;
-    }
-
-    .pic01 {
-        background-image: url("https://ej2.syncfusion.com/demos/src/grid/images/1.png");
-    }
-
-    .pic02 {
-        background-image: url("https://ej2.syncfusion.com/demos/src/grid/images/3.png");
-    }
-
-    .pic03 {
-        background-image: url("https://ej2.syncfusion.com/demos/src/grid/images/5.png");
-    }
-
-    .pic04 {
-        background-image: url("https://ej2.syncfusion.com/demos/src/grid/images/2.png");
     }
 </style>
 

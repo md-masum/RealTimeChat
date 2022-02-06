@@ -1,53 +1,30 @@
-﻿using Microsoft.AspNetCore.Components;
-using Ui.HttpRepository;
-using Ui.Models;
+﻿using Ui.Models;
 
 namespace Ui.Pages
 {
     public partial class Profile
     {
         private UserUpdateDto _userUpdate = new UserUpdateDto();
-
-        [Inject]
-        public IUserService UserService { get; set; }
-
-        [Inject]
-        public HttpInterceptorService Interceptor { get; set; }
-
         public UserDto UserData { get; set; } = new();
-
-        public bool ShowErrorMessage { get; set; }
-        public string Error { get; set; } = String.Empty;
 
         public bool IsInEditState { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            Interceptor.RegisterEvent();
+            _httpInterceptor.RegisterEvent();
 
-            var data = await UserService.GetCurrentUser();
-            if (data.IsSuccess)
-            {
-                UserData = data.Data;
-            }
-            else
-            {
-                Error = data.Message;
-                ShowErrorMessage = true;
-            }
+            var data = await _httpClient.GetAsync<UserDto>("api/user");
+            if (data != null) UserData = data;
             IsInEditState = false;
         }
 
         public async Task Update()
         {
-            var result = await UserService.UpdateUser(_userUpdate);
-            if (!result.IsSuccess)
+            var result = await _httpClient.PutAsync<UserDto, UserUpdateDto>("api/user", _userUpdate);
+            if (result != null)
             {
-                Error = result.Message;
-                ShowErrorMessage = true;
+                UserData = result;
             }
-
-            UserData = result.Data;
             IsInEditState = false;
         }
 
@@ -70,6 +47,6 @@ namespace Ui.Pages
             IsInEditState = false;
         }
 
-        public void Dispose() => Interceptor.DisposeEvent();
+        public void Dispose() => _httpInterceptor.DisposeEvent();
     }
 }

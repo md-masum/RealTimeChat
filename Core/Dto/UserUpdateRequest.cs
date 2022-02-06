@@ -9,7 +9,7 @@ namespace Core.Dto
         public string LastName { get; set; }
         public string PresentAddress { get; set; }
         public string PermanentAddress { get; set; }
-        public string DateOfBirth { get; set; }
+        public DateTime DateOfBirth { get; set; }
         public bool IsActive { get; set; }
     }
 }

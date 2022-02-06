@@ -1,15 +1,23 @@
-﻿using AutoMapper;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+using AutoMapper;
 using Core.Dto;
 using Core.Entity;
 using Core.Entity.Auth;
 using Core.Exceptions;
+using Core.Extensions;
 using Core.Interfaces.Common;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Service.Hubs;
+using JsonConverter = System.Text.Json.Serialization.JsonConverter;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Service
 {
@@ -17,6 +25,7 @@ namespace Service
     {
         private readonly ICurrentUserService _currentUserService;
         private readonly IBaseRepository<ChatMessage> _chatMessageRepository;
+        private readonly IBaseRepository<CallConnectionInfo> _callConnectionRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
         private readonly IHubContext<ChatHub, IChatClient> _chatHub;
@@ -24,12 +33,14 @@ namespace Service
 
         public ChatService(ICurrentUserService currentUserService, 
             IBaseRepository<ChatMessage> chatMessageRepository,
+            IBaseRepository<CallConnectionInfo> callConnectionRepository,
             UserManager<ApplicationUser> userManager,
             IMapper mapper,
             IHubContext<ChatHub, IChatClient> chatHub)
         {
             _currentUserService = currentUserService;
             _chatMessageRepository = chatMessageRepository;
+            _callConnectionRepository = callConnectionRepository;
             _userManager = userManager;
             _mapper = mapper;
             _chatHub = chatHub;
@@ -165,6 +176,83 @@ namespace Service
                 return await MapUserToConversation(_mapper.Map<List<ConversationToReturnDto>>(messages), fromUserId!, toUserId);
             }
             
+        }
+
+        public async Task RtcClientProtocol(RtcClientData data)
+        {
+            var jObject = JObject.Parse(data.Data);
+            var type = jObject["type"]?.ToString();
+
+            if (!string.IsNullOrWhiteSpace(type))
+            {
+                var user = await _callConnectionRepository.GetAsync(c =>
+                    c.SenderId == data.Sender && c.ReceiverId == data.Receiver && c.IsClosed == false);
+                switch (type)
+                {
+                    case "store_user":
+                        if (user != null) return;
+                        var callConnectionInfo = new CallConnectionInfo
+                            {
+                                SenderId = data.Sender,
+                                ReceiverId = data.Receiver,
+                                CallKey = Guid.NewGuid().ToString(),
+                                IsClosed = false
+                            };
+                        await _callConnectionRepository.AddAsync(callConnectionInfo);
+                        return;
+
+                    case "store_offer":
+                        if (user == null) return;
+                        user.Offer = jObject["offer"]?.ToString();
+                        return;
+
+                    case "store_candidate":
+                        if (user == null) return;
+                        user.Candidate = jObject["offer"]?.ToString();
+                        return;
+
+                    case "send_answer":
+                        if (user == null) return;
+                        await SendData(new
+                        {
+                            type = "answer",
+                            answer = jObject["answer"]
+                        }, user.SenderId, user.ReceiverId);
+                        return;
+
+                    case "send_candidate":
+                        if (user == null) return;
+                        await SendData(new
+                        {
+                            type = "candidate",
+                            candidate = jObject["candidate"]
+                        }, user.SenderId, user.ReceiverId);
+                        return;
+
+                    case "join_call":
+                        if (user == null || user.Offer == null || user.Candidate == null) return;
+
+                        await SendData(new
+                        {
+                            type = "offer",
+                            offer = JsonSerializer.Deserialize<object>(user.Offer)
+                        }, user.SenderId, user.ReceiverId);
+
+                        await SendData(new
+                        {
+                            type = "candidate",
+                            candidate = JsonSerializer.Deserialize<object>(user.Candidate)
+                        }, user.SenderId, user.ReceiverId);
+
+                        return;
+                }
+            }
+        }
+
+        private async Task SendData(object data, string sender, string receiver)
+        {
+            string stringData = JsonSerializer.Serialize(data);
+            await _chatHub.Clients.All.RtcClientProtocol(stringData, sender, receiver);
         }
     }
 }

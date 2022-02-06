@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository.Context;
 
@@ -10,9 +11,10 @@ using Repository.Context;
 namespace Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220201185847_ChangeEntityApplicationUser")]
+    partial class ChangeEntityApplicationUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -175,46 +177,6 @@ namespace Repository.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("UserImages", "Chat");
-                });
-
-            modelBuilder.Entity("Core.Entity.CallConnectionInfo", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CallKey")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Candidate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsClosed")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("LastModifiedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Offer")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ReceiverId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("SenderId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CallConnectionInfos", "Chat");
                 });
 
             modelBuilder.Entity("Core.Entity.ChatMessage", b =>

@@ -45,5 +45,12 @@ namespace Api.Controllers
             var response = await _chatService.DeleteMessage(id);
             return Ok(new ApiResponse<bool>(response));
         }
+
+        [HttpPost("RtcClientProtocol")]
+        public async Task<ActionResult> RtcClientProtocol(RtcClientData data)
+        {
+            await _chatService.RtcClientProtocol(data);
+            return Ok();
+        }
     }
 }

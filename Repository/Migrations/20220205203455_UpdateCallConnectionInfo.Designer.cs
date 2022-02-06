@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository.Context;
 
@@ -10,9 +11,10 @@ using Repository.Context;
 namespace Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220205203455_UpdateCallConnectionInfo")]
+    partial class UpdateCallConnectionInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,9 +187,6 @@ namespace Repository.Migrations
                     b.Property<string>("CallKey")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Candidate")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("CreatedBy")
                         .HasColumnType("TEXT");
 
@@ -201,9 +200,6 @@ namespace Repository.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("LastModifiedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Offer")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ReceiverId")

@@ -1,4 +1,6 @@
-﻿using Syncfusion.Blazor.Notifications;
+﻿using Microsoft.JSInterop;
+using Syncfusion.Blazor.Notifications;
+using Ui.Shared;
 
 namespace Ui.Service
 {
@@ -11,10 +13,12 @@ namespace Ui.Service
 
     public class ToastService
     {
-        public ToastService()
+        private readonly IJSInProcessRuntime _js;
+        public ToastService(IJSInProcessRuntime js)
         {
             SfToastObj = new SfToast();
             ToastPosition = ToastPositions.Right.ToString();
+            _js = js;
         }
 
         public SfToast SfToastObj { get; set; }
@@ -29,7 +33,7 @@ namespace Ui.Service
                 Timeout = timeOut,
                 CssClass = "e-toast-info"
             };
-            SfToastObj.Show(toastModel);
+            Show(toastModel);
         }
 
         public void ShowWarn(string message, int timeOut)
@@ -42,7 +46,7 @@ namespace Ui.Service
                 Timeout = timeOut,
                 CssClass = "e-toast-warning"
             };
-            SfToastObj.Show(toastModel);
+            Show(toastModel);
         }
 
         public void ShowSuccess(string message, int timeOut)
@@ -55,7 +59,7 @@ namespace Ui.Service
                 Timeout = timeOut,
                 CssClass = "e-toast-success"
             };
-            SfToastObj.Show(toastModel);
+            Show(toastModel);
         }
 
         public void ShowError(string message, int timeOut)
@@ -68,7 +72,13 @@ namespace Ui.Service
                 Timeout = timeOut,
                 CssClass = "e-toast-danger"
             };
-            SfToastObj.Show(toastModel);
+            Show(toastModel);
+        }
+
+        private void Show(ToastModel model)
+        {
+            _js.InvokeVoid(JsInteropConstant.PlatNotification);
+            SfToastObj.Show(model);
         }
     }
 }

@@ -10,5 +10,7 @@ namespace Core.Interfaces.Services
         Task<List<ConversationToReturnDto>> GetConversation(string contactId);
         Task<List<ConversationToReturnDto>> GetAllConversation(string contactId);
         Task<List<ConversationToReturnDto>> GetAllConversation(string contactId, int batchNumber);
+
+        Task RtcClientProtocol(RtcClientData data);
     }
 }

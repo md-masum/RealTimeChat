@@ -7,6 +7,7 @@ namespace Service.Hubs
     [Authorize]
     public class ChatHub : Hub<IChatClient>
     {
+
         // private readonly ICurrentUserService _cureUserService;
         //
         // public ChatHub(ICurrentUserService cureUserService)
@@ -28,5 +29,10 @@ namespace Service.Hubs
         // {
         //     await Clients.User(receiverUserId).SendAsync("ReceiveChatNotification", senderName, receiverUserId, senderUserId);
         // }
+    }
+
+    public class RoomManager
+    {
+        public string[] Users { get; set; }
     }
 }

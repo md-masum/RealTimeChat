@@ -55,6 +55,22 @@ namespace Ui.HttpRepository
 
         }
 
+        public async Task<bool> SignalRPost(string url, object requestBody)
+        {
+            try
+            {
+                var response = await _client.PostAsJsonAsync(url, requestBody);
+                var content = await response.Content.ReadFromJsonAsync<bool>();
+                return content;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
+
+        }
+
         public async Task<TResponse> PutAsync<TResponse, TRequest>(string url, TRequest requestBody)
         {
             try

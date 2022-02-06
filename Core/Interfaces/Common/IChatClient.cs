@@ -6,5 +6,6 @@ namespace Core.Interfaces.Common
     {
         Task ReceiveMessage(ConversationToReturnDto message);
         Task ReceiveChatNotification(string senderName);
+        Task RtcClientProtocol(string data, string sender, string receiver);
     }
 }
